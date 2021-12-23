@@ -2,9 +2,12 @@ from mechanism import *
 import numpy as np
 import matplotlib.pyplot as plt
 
+# Joint.follow_all = True  # You can trace the path of all joints by uncommenting this
+
 O, A, B, C, D = get_joints('O A B C D')
 D.follow = True
 B.follow = True
+
 a = Vector((O, A), r=5)
 # b = Vector((O, C), r=8, theta=np.deg2rad(90), style='ground')  # Use this vector for a cusp output
 b = Vector((O, C), r=8, theta=0, style='ground')

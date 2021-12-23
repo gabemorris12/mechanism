@@ -1,9 +1,13 @@
-import sys
 import os
+import sys
 import warnings
 
+# Warning that arise due to using quiver:
 warnings.filterwarnings('ignore', 'divide by zero encountered in double_scalars')
 warnings.filterwarnings('ignore', 'invalid value encountered in multiply')
+
+# Warning that arises due to the 'move circle' function:
+warnings.filterwarnings('ignore', 'invalid value encountered in sqrt')
 
 from .mechanism import Joint, Mechanism, get_joints, get_sum
 from .dataframe import Data, read_csv, print_matrix

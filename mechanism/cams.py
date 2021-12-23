@@ -1,6 +1,5 @@
 import csv
 import json
-import warnings
 
 import matplotlib.pyplot as plt
 import numpy as np
@@ -8,8 +7,6 @@ from matplotlib.animation import FuncAnimation
 from scipy.optimize import fsolve
 
 from .vectors import APPEARANCE
-
-warnings.filterwarnings('ignore', 'invalid value encountered in sqrt')
 
 
 class Cam:

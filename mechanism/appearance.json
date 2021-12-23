@@ -3,17 +3,17 @@
     "default": {
       "marker": "o",
       "color": "maroon",
-      "zorder": 2
+      "zorder": 3
     },
     "ground": {
       "ls": "--",
       "color": "black",
-      "zorder": 1
+      "zorder": 2
     },
     "dotted": {
       "ls": ":",
       "color": "black",
-      "zorder": 1
+      "zorder": 2
     }
   },
   "joint_path": {

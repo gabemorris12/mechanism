@@ -497,8 +497,7 @@ class Mechanism:
             if not velocity and not acceleration and show_joints:
                 ax.annotate(j.name, (j.x_pos, j.y_pos), size='large')
 
-        ax.set_xlabel('X direction')
-        ax.set_ylabel('Y direction')
+        ax.grid()
         plt.show()
 
     def test(self):

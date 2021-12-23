@@ -1,5 +1,8 @@
 from mechanism import Vector, get_joints, Mechanism
+import matplotlib.pyplot as plt
 import numpy as np
+import warnings
+warnings.filterwarnings('ignore')  # There's something about this example that causes fsolve to throw a warning
 
 O2, O4, O6, A, B, C, D, E, F, G = get_joints('O2 O4 O6 A B C D E F G')
 a = Vector((O4, B), r=2.5)
@@ -28,33 +31,16 @@ def loops(x, inp):
     return temp.flatten()
 
 
+thetas = np.linspace(0.4086669444767948, 1.8472648631177, 100)
+thetas_reversed = np.flip(thetas)[1:]
+thetas = np.concatenate((thetas, thetas_reversed))
+omegas = -30*np.ones(thetas.size)
+alphas = np.zeros(thetas.size)
 mechanism = Mechanism(vectors=(a, b, c, d, e, f, g, h, i, j, k, l), input_vector=a, loops=loops,
-                      pos=np.deg2rad(52.92024014972946), vel=-30, acc=0, guess=(guess1, guess2, guess3))
+                      pos=thetas, vel=omegas, acc=alphas, guess=(guess1, guess2, guess3))
 
-mechanism.calculate()
-mechanism.tables(acceleration=True, velocity=True, position=True)
-mechanism.plot(cushion=2, show_joints=True)
-mechanism.plot(cushion=2, velocity=True, acceleration=True)
+mechanism.iterate()
+ani = mechanism.get_animation()
+plt.show()
 
-O, A, B, C, P = get_joints('O A B C P')
-a = Vector((O, A), r=2)
-b = Vector((A, B), r=4.1)
-c = Vector((C, B), r=3)
-d = Vector((O, C), r=4, theta=0, style='ground')
-e = Vector((A, P), r=2.5)
-f = Vector((O, P), show=False)
-
-
-def loops(x, i_):
-    temp = np.zeros((2, 2))
-    temp[0] = a(i_) + b(x[0]) - c(x[1]) - d()
-    temp[1] = a(i_) + e(x[0] + np.deg2rad(30)) - f(x[2], x[3])
-    return temp.flatten()
-
-
-guess1 = np.concatenate((np.deg2rad([20, 60]), np.array([4]), np.deg2rad([48])))
-mechanism = Mechanism(vectors=(a, c, b, d, e, f), input_vector=a, pos=np.deg2rad(45), guess=(guess1, ),
-                      loops=loops)
-mechanism.calculate()
-mechanism.tables(position=True)
-mechanism.plot()
+# ani.save('../animations/non_grashof.mp4', dpi=300)
