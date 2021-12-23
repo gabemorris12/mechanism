@@ -1,0 +1,69 @@
+{
+  "mechanism_plot": {
+    "default": {
+      "marker": "o",
+      "color": "maroon",
+      "zorder": 2
+    },
+    "ground": {
+      "ls": "--",
+      "color": "black",
+      "zorder": 1
+    },
+    "dotted": {
+      "ls": ":",
+      "color": "black",
+      "zorder": 1
+    }
+  },
+  "joint_path": {
+    "default": {
+      "color": "deepskyblue",
+      "zorder": 1
+    }
+  },
+  "cam_plot": {
+    "default": {
+      "color": "maroon"
+    },
+    "naive_line": {
+      "color": "maroon",
+      "ls": "-",
+      "label": "Naive"
+    },
+    "harmonic_line": {
+      "color": "deepskyblue",
+      "ls": "--",
+      "alpha": 0.85,
+      "label": "Harmonic"
+    },
+    "cycloidal_line": {
+      "color": "black",
+      "ls": "-.",
+      "alpha": 0.7,
+      "label": "Cycloidal"
+    },
+    "pitch_line": {
+      "color": "deepskyblue",
+      "ls": ":",
+      "label": "Pitch"
+    },
+    "base_circle": {
+      "color": "black",
+      "ls": "--",
+      "label": "Base"
+    },
+    "fill": {
+      "color": "maroon",
+      "ec": "black",
+      "lw": 2,
+      "zorder": 2
+    },
+    "follower_fill": {
+      "color": "darkgrey",
+      "ec": "black",
+      "lw": 2,
+      "zorder": 2
+    }
+  }
+}
