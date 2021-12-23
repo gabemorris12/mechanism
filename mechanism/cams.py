@@ -10,7 +10,55 @@ from .vectors import APPEARANCE
 
 
 class Cam:
-    def __init__(self, motion=None, degrees=False, omega=None, rotation='ccw', h=0.0062):
+    def __init__(self, motion=None, degrees=False, omega=0., rotation='ccw', h=0.0062):
+        """
+        :param motion: Description of motion as a list of tuples. Each tuple must contain 3 items for rising and falling
+                       and two items for dwelling. The first item of the tuple is a string equal to "Rise", "Fall", and
+                       "Dwell" (not case-sensitive). For rise and fall motion, the second item in the tuple is the
+                       distance at which the follower falls or rises. For dwelling, the second item in the tuple is
+                       either the time (in seconds) or angle (in degrees) for which the displacement remains constant.
+                       The third item in the tuple for rising and falling is equivalent to the second item for dwelling.
+        :param degrees: If true, the last item in each tuple of 'motion' will be considered as degree inputs. If false,
+                        they will be considered as the time at which the rising, falling, or dwelling occurs. This will
+                        be enough to calculate the angular velocity, omega. The angular velocity will have to be given
+                        if 'degrees' is set to true.
+        :param omega: The angular velocity of the cam. This is always assumed to be constant and should only be given if
+                      'degrees' is set to true.
+        :param rotation: The direction of the cam rotation. Use 'ccw' for counterclockwise and 'cw' for clockwise. This
+                         will affect the animation and profile plots.
+        :param h: The step at which the data set gets initialized from 0 to 2*pi radians.
+
+        Instance Attributes
+        -------------------
+        motion: A list of tuples that describe the desired motion of the cam and follower
+        thetas: An np.ndarray from 0 to 2*pi at given step interval
+        thetas_d: An np.ndarray of thetas in degrees
+        thetas_r: An np.ndarray of thetas going in either the counterclockwise direction (negative values) or clockwise
+                  direction (positive values). This is only used to display the profile and retrieve the animation.
+        omega: The angular velocity of the cam in radians per second
+        rotation: The cam direction as a string ('ccw' or 'cw')
+        times: A list of time intervals of the motion. Only exists if 'degrees' is false.
+        intervals: A list of angle intervals (in radians) of the motion.
+        shifts: A list of the shifts that would occur when implementing the piecewise functions.
+        conditions: A list of np.ndarray's of booleans for each interval, corresponding to thetas. All sizes are equal.
+        default: A dictionary that gets past to **kwargs when specifying a default appearance in a plot.
+
+        Supported motion types are as follows:
+        naive: Naive object (how not to design a cam)
+        harmonic: Harmonic object
+        cycloidal: Cycloidal object
+
+        More motion types may be created in the future for overall better cam designs.
+
+        Useful Methods to Mention
+        -------------------------
+        plot: Plots the displacement of a specified motion type
+        svaj: Plots the svaj diagram of a specified motion type
+        profile: Plots the cam profile of a specified motion type
+        get_base_circle: Performs an analysis to appropriately size a cam
+        save_coordinates: Saves the coordinates of the cam profile to a file (can be used to create solidworks part)
+        get_animation: Retrieves and animation and follower object.
+        """
         self.motion = motion
         self.thetas = np.arange(0, 2*np.pi, h)
         self.thetas_d = np.rad2deg(self.thetas)
@@ -64,13 +112,17 @@ class Cam:
             self.thetas_r = self.thetas
 
     def get_conditions(self, t):
+        """ Returns a list of conditional arrays"""
         # t is short for theta
         conditions = [np.logical_and(t >= 0, t < self.shifts[0])]
         for i in range(1, self.shifts.size):
             conditions.append(np.logical_and(t >= self.shifts[i - 1], t < self.shifts[i]))
         return conditions
 
-    def plot(self, kind=None):
+    def plot(self, kind=''):
+        """
+        :param kind: The type of motion desired as a string (i.e. 'cycloidal')
+        """
         fig, ax = plt.subplots()
 
         if kind == 'all':
@@ -88,7 +140,10 @@ class Cam:
         ax.grid()
         plt.show()
 
-    def svaj(self, kind=None):
+    def svaj(self, kind=''):
+        """
+        :param kind: The type of motion desired as a string
+        """
         fig, ax = plt.subplots(nrows=4, ncols=1)
         assert self.omega is not None, Exception(
             'You must include omega input in order to know velocity, acceleration, and jerk.')
@@ -109,7 +164,15 @@ class Cam:
         plt.xlabel(r'$\theta$ (degrees)')
         plt.show()
 
-    def profile(self, kind=None, base=0, show_base=False, roller_radius=0, show_pitch=False, loc=None):
+    def profile(self, kind='', base=0, show_base=False, roller_radius=0, show_pitch=False, loc=''):
+        """
+        :param kind: The type of motion desired
+        :param base: The base circle radius of the cam
+        :param show_base: If true, the base circle will be present in the plot
+        :param roller_radius: To be used if the pitch curve is desired
+        :param show_pitch: If true, the pitch curve will be present in the plot (roller_radius must be given)
+        :param loc: The location of the legend. If none, there will be no legend. See matplotlib legend documentation
+        """
         fig, ax = plt.subplots()
 
         pitch_line = self.naive.cam_plot['pitch_line']
@@ -139,12 +202,11 @@ class Cam:
         ax.grid()
         plt.show()
 
-    def get_base_circle(self, kind=None, follower=None, roller_radius=None, eccentricity=0, max_pressure_angle=None,
-                        desired_min_rho=None, plot=False):
+    def get_base_circle(self, kind='', follower='', roller_radius=0, eccentricity=0, max_pressure_angle=0,
+                        desired_min_rho=0, plot=False):
         # todo: add a conservative argument for a profile with a concave down curvature for all theta
         """
-        :param kind: Type of motion desired for the analysis (i.e. 'harmonic', 'cycloidal'). Can be a custom
-                         ndarray.
+        :param kind: Type of motion desired for the analysis (i.e. 'harmonic', 'cycloidal').
         :param follower: The type of follower. Either 'roller' or 'flat' are acceptable arguments.
         :param roller_radius: The radius of the roller follower.
         :param eccentricity: The offset of the follower from the center (used for roller followers).
@@ -210,7 +272,14 @@ class Cam:
         else:
             raise Exception('Only acceptable arguments for follower are "flat" and "roller".')
 
-    def save_coordinates(self, file=None, kind=None, base=0, solidworks=False):
+    def save_coordinates(self, file='', kind='', base=0, solidworks=False):
+        """
+        :param file: The filepath to save the file too
+        :param kind: The desired motion type
+        :param base: The base circle radius of the cam
+        :param solidworks: If true, the file structure will be acceptable by solidworks standards. Use a .txt file
+                           extension for solidworks to be able to select the file.
+        """
         motion_type = self.get_motion_type(kind)
 
         x_coords, y_coords = motion_type.get_profile(base, self.thetas_r)
@@ -227,6 +296,7 @@ class Cam:
                     writer.writerow([x, y])
 
     def get_motion_type(self, kind):
+        """Returns the motion object specified by 'kind'"""
         if kind == 'naive':
             return self.naive
         elif kind == 'harmonic':
@@ -238,6 +308,19 @@ class Cam:
 
     def get_animation(self, kind=None, base=0, inc=10, cushion=0.5, roller_radius=0, face_width=0, length=0, width=0,
                       eccentricity=0):
+        """
+        :param kind: The motion type to base the animation off of
+        :param base: The base radius of the cam
+        :param inc: Adjusts the speed of the animation by incrementing across the values of thetas.
+        :param cushion: The cushion of the window around the objects
+        :param roller_radius: The radius of the roller follower. If specified, the animation returns a roller animation.
+        :param face_width: The face_width of the follower. If specified, the animation returns a flat faced follower
+                           animation
+        :param length: The length of the follower (optional)
+        :param width: The width of the follower (optional)
+        :param eccentricity: The offset of the follower
+        :return: animation object and follower object
+        """
         motion_type = self.get_motion_type(kind)
 
         fig, ax = plt.subplots()
@@ -290,6 +373,24 @@ class Cam:
 
 class Motion:
     def __init__(self, motion, shifts, intervals, conditions, thetas, omega=None):
+        """
+        :param motion: The same list of tuples described in the Cam class documentation
+        :param shifts: The shifts from class Cam
+        :param intervals: The intervals from class Cam
+        :param conditions: The conditions from class Cam
+        :param thetas: The np.ndarray from class Cam
+        :param omega: The angular velocity of the cam
+
+        Instance Attributes
+        -------------------
+        motion, shifts, intervals, thetas, and omega are all the same as described in Cam documentation
+        S: The displacements of the cam corresponding to each value of theta
+        V: The velocity of the cam corresponding to each value of theta
+        A: The acceleration of the cam corresponding to each value of theta
+        J: The jerk of the cam corresponding to each value of theta
+
+        Methods used are primarily used for internal use to aid the useful methods within the Cam class.
+        """
         self.motion = motion
         self.shifts, self.intervals = shifts, intervals
         self.conditions = conditions
@@ -307,6 +408,12 @@ class Motion:
         self.cam_plot = appearance['cam_plot']
 
     def get_functions(self, func_maker, rate=False):
+        """
+        :param func_maker: A function that returns a lambda expression
+        :param rate: If true, then dwells will be zero
+        :return: A list of lambda expressions corresponding to each interval of rotation. Used to create the piecewise
+                 function.
+        """
         start = self.motion[0]
         if start[0].lower() == 'dwell':
             h1, h2 = 0, 0
@@ -331,6 +438,7 @@ class Motion:
         return functions
 
     def get_rates(self):
+        """Gets the rates of velocity, acceleration, and jerk of the cam"""
         self.V = np.piecewise(self.thetas, condlist=self.conditions,
                               funclist=self.get_functions(self.f_, rate=True))*self.omega
         self.A = np.piecewise(self.thetas, condlist=self.conditions,
@@ -339,6 +447,11 @@ class Motion:
                               funclist=self.get_functions(self.f___, rate=True))*self.omega**3
 
     def get_profile(self, base, thetas):
+        """
+        :param base: The base radius of the cam
+        :param thetas: This is thetas_r for the Cam class
+        :return: The coordinates of the cam
+        """
         c_nums = (base + self.S)*np.exp(1j*thetas)
         return np.real(c_nums), np.imag(c_nums)
 
@@ -436,6 +549,24 @@ class Cycloidal(Motion):
 
 class RollerFollower:
     def __init__(self, motion, base, thetas, inc, roller_radius, length=0, width=0, eccentricity=0):
+        """
+        :param motion: Motion object
+        :param base: Base radius of the cam
+        :param thetas: thetas_r associated with the cam
+        :param inc: The increment across the data set to be used
+        :param roller_radius: The radius of the follower
+        :param length: The length of the follower
+        :param width: The width of the follower
+        :param eccentricity: The offset of the follower
+
+        Useful Instance Attributes
+        --------------------------
+        S: The displacement of the follower (np.gradient to get the velocity and acceleration)
+
+        Useful Methods to Mention
+        -------------------------
+        plot: Plots the displacement alongside the cam displacement to show the difference between the two
+        """
         self.indexes = range(0, thetas.size, inc)
         self.motion_length = len(self.indexes)
         self.motion = motion
@@ -473,12 +604,16 @@ class RollerFollower:
         self.S = np.array(self.roller_centers) - np.min(self.roller_centers)
 
     def get_bounds(self):
+        """
+        :return: The bounds of the animation
+        """
         x_max = np.amax(self.vertices)
         x_min = np.amin(self.cam_x)
         y_min, y_max = np.amin(self.cam_y), np.amax(self.cam_y)
         return (x_min, x_max), (y_min, y_max)
 
     def plot(self):
+        """Plots the displacement of the follower alongside the cam displacement"""
         plt.plot(self.motion.thetas[self.indexes], self.S, label='Follower Displacement',
                  **self.motion.cam_plot['default'])
         plt.plot(self.motion.thetas, self.motion.S, **self.motion.appearance)
@@ -491,6 +626,9 @@ class RollerFollower:
 
 
 class FlatFollower:
+    """
+    See the documentation for RollerFollower
+    """
     def __init__(self, motion, base, thetas, inc, face_width=0, length=0, width=0, eccentricity=0):
         self.indexes = range(0, thetas.size, inc)
         self.motion_length = len(self.indexes)
@@ -547,6 +685,15 @@ def dwell_maker(h):
 
 
 def move_circle(cam_profile, r, start_point):
+    """
+    This function is responsible for keeping the roller tangent to the surface of the cam within a 1/1000th unit
+    tolerance.
+
+    :param cam_profile: The coordinates of the cam in a (2, N) format.
+    :param r: The roller radius
+    :param start_point: The point to start the circle at
+    :return: The center of the circle in the x direction to where the circle is tangent to the surface of the cam
+    """
     cam_x, cam_y = cam_profile
     a, b = start_point
     inside = np.logical_and(cam_y < np.sqrt(r**2 - (cam_x - a)**2) + b, cam_y > -np.sqrt(r**2 - (cam_x - a)**2) + b)
