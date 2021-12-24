@@ -13,7 +13,7 @@ class Cam:
     def __init__(self, motion=None, degrees=False, omega=0., rotation='ccw', h=0.0062):
         """
         :param motion: Description of motion as a list of tuples. Each tuple must contain 3 items for rising and falling
-                       and two items for dwelling. The first item of the tuple is a string equal to "Rise", "Fall", and
+                       and two items for dwelling. The first item of the tuple is a string equal to "Rise", "Fall", or
                        "Dwell" (not case-sensitive). For rise and fall motion, the second item in the tuple is the
                        distance at which the follower falls or rises. For dwelling, the second item in the tuple is
                        either the time (in seconds) or angle (in degrees) for which the displacement remains constant.
@@ -203,8 +203,7 @@ class Cam:
         plt.show()
 
     def get_base_circle(self, kind='', follower='', roller_radius=0, eccentricity=0, max_pressure_angle=0,
-                        desired_min_rho=0, plot=False):
-        # todo: add a conservative argument for a profile with a concave down curvature for all theta
+                        desired_min_rho=0, conservative_flat=False, plot=False):
         """
         :param kind: Type of motion desired for the analysis (i.e. 'harmonic', 'cycloidal').
         :param follower: The type of follower. Either 'roller' or 'flat' are acceptable arguments.
@@ -212,6 +211,10 @@ class Cam:
         :param eccentricity: The offset of the follower from the center (used for roller followers).
         :param max_pressure_angle: The desired maximum pressure angle (used for roller followers).
         :param desired_min_rho: The desired minimum radius of curvature. Used for flat follower.
+        :param conservative_flat: If the follower is a flat follower and this is set to true, then a cam profile with
+                                  a positive radius of curvature for the entire profile will be returned. This implies
+                                  that the surface of the cam is concave down from 0 to 180 degrees and concave up from
+                                  180 to 360 degrees.
         :param plot: Choose whether to include a plot of the pressure angles at the calculated base circle. Only used
                      with roller followers.
         :return: A dictionary of the suggested base circle, minimum radius of curvature at that base circle, and the
@@ -263,11 +266,24 @@ class Cam:
         elif follower == 'flat':
             assert desired_min_rho is not None, 'Minimum rho must be specified.'
 
-            base_circle = desired_min_rho - np.min(y + y__)
-            rhos = base_circle + y + y__
-
             min_face_width = np.max(y_) - np.min(y_)
-            return {'Rb': base_circle, 'Min Rho': desired_min_rho, 'Min Face Width': min_face_width, 'rhos': rhos}
+
+            if not conservative_flat:
+                base_circle = desired_min_rho - np.min(y + y__)
+                rhos = base_circle + y + y__
+
+                return {'Rb': base_circle, 'Min Rho': desired_min_rho, 'Min Face Width': min_face_width, 'rhos': rhos}
+
+            Rb_, min_rho, step = 1/2, -1, 0.001
+            rhos = None
+
+            while min_rho < desired_min_rho:
+                rhos = ((Rb_ + y)**2 + y_**2)**1.5/(
+                        (Rb_ + y)**2 + 2*y_**2 - y__*(Rb_ + y))
+                min_rho = np.min(rhos)
+                Rb_ += step
+
+            return {'Rb': Rb_, 'Min Rho': min_rho, 'Min Face Width': min_face_width, 'rhos': rhos}
 
         else:
             raise Exception('Only acceptable arguments for follower are "flat" and "roller".')
