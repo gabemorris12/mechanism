@@ -77,3 +77,4 @@ c = Vector((O, C), r=8, theta=0, style='ground')
 d = Vector((C, B), r=9)
 ```
 
+![image not found](images/fourbar_animation.gif)
