@@ -12,7 +12,7 @@ class VectorBase:
         :param joints: tup; A tuple of Joint objects. The first Joint is the tail, and the second is the head.
         :param r: int, float; The length of the vector. If specified, the vector is taken to be a constant length,
             meaning r_dot and r_ddot is zero.
-        :param theta: int, float; The angle of the vector in radians from the positive x-axis. Counter clockwise is
+        :param theta: int, float; The angle of the vector in radians from the positive x-axis. Counterclockwise is
             positive. If specified, the vector is directed at a constant angle, meaning omega and alpha is zero.
         :param x: int, float; The value of the x component of the vector.
         :param y: int, float; The value of the y component of the vector.
@@ -231,7 +231,7 @@ class Position(VectorBase):
         del self.r_dot, self.r_ddot, self.omega, self.alpha, self.r_dots, self.omegas, self.r_ddots, self.alphas
 
     def both(self, r, theta):
-        # When both the theta and the radius is unknown
+        # When both the theta and the radius are unknown
         self.x, self.y = r*np.cos(theta), r*np.sin(theta)
         self.r, self.theta = r, theta
         return np.array([self.x, self.y])
