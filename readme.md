@@ -17,6 +17,31 @@ properties of an involute gear tooth. Similarly to the cam profile, the coordina
 
 The results acquired from using this package are not responsible for any failed design.
 
+# Results/Examples
+`fourbarlinkage.py`
+
+![image not found](images/fourbarlinkage.gif)
+
+`crunode_coupler.py`
+
+![image not found](images/crunode_coupler.gif)
+
+`crankslider.py`
+
+![image not found](images/crankslider.gif)
+
+`engine.py`
+
+![image not found](images/engine.gif)
+
+`non_grashof.py`
+
+![image not found](images/non_grashof.gif)
+
+`cam2_example.py`
+
+![image not found](images/cam2.gif)
+
 # Linkages, Cranks, Couplers, and Rockers
 
 In order to use the contents of `mechanism.py`, a basic knowledge of vector loops must be known. The structure of the

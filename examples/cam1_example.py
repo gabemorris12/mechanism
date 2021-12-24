@@ -26,6 +26,6 @@ follower.plot()
 
 ani_, follower = cam.get_animation(kind='harmonic', base=4, inc=5, face_width=4)
 
-# ani_.save('../animations/cam1.flat_face.mp4')
+# ani_.save('../animations/cam1_flat_face.mp4')
 
 follower.plot()
