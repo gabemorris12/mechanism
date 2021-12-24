@@ -29,3 +29,4 @@ ani_flat, follower = cam.get_animation(kind='cycloidal', base=flat_analysis['Rb'
                                        inc=5)
 follower.plot()
 
+# cam.save_coordinates('cam_coordinates.txt', kind='cycloidal', base=1.3, solidworks=True)

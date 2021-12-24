@@ -18,6 +18,7 @@ properties of an involute gear tooth. Similarly to the cam profile, the coordina
 The results acquired from using this package are not responsible for any failed design.
 
 # Results/Examples
+
 `fourbarlinkage.py`
 
 ![image not found](images/fourbarlinkage.gif)
@@ -292,9 +293,9 @@ Output:
 
 The graph above shows the actual follower displacement due to the circle having to always be tangent to the surface of
 the cam. Note that as a result of this physical limitation, the follower will have higher magnitudes of velocity and
-acceleration. 
+acceleration.
 
-For the flat faced follower, 
+For the flat faced follower,
 
 ```python
 ani_flat, follower = cam.get_animation(kind='cycloidal', base=flat_analysis['Rb'], face_width=2.75, length=2, width=3/8,
@@ -302,7 +303,33 @@ ani_flat, follower = cam.get_animation(kind='cycloidal', base=flat_analysis['Rb'
 follower.plot()
 ```
 
-Output: 
+Output:
 
 ![image not found](images/cam_flat.gif)
 ![image not found](images/flat_follower_displacement.png)
+
+### Getting Coordinates into SolidWorks
+
+Save the coordinates to a text file.
+
+```python
+cam.save_coordinates('cam_coordinates.txt', kind='cycloidal', base=1.3, solidworks=True)
+```
+
+Select `Curve Through XYZ Points`
+
+![image not found](images/curve_xyz.png)
+
+The cam profile will always be extended to the front plane due to the manner in which SolidWorks defines the global
+coordinates. Next, select browse and choose the saved coordinate file.
+
+![image not found](images/select_file.PNG)
+
+Create a sketch on the front plane. Select the curve and then convert entities. The sketch is now projected to the front
+plane. 
+
+![image not found](images/front_plane.PNG)
+
+Notice that the sketch is not closed. Add a line to close the sketch, then extrude the sketch. 
+
+![image not found](images/solidworks_cam.PNG)
