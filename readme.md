@@ -77,7 +77,7 @@ c = Vector((O, C), r=8, theta=0, style='ground')
 d = Vector((C, B), r=9)
 ```
 
-Always define the vectors in the polar form. The first argument are the joints, and the first joint is the tail of the 
+Always define the vectors in the polar form. The first argument is the joints, and the first joint is the tail of the 
 vector, and the second is the head. Additionally, extra keyword arguments will be passed to plt.plot() for styling. 
 There should be half as many loop equations as there are unknown. The input vector "a" does not need to have its known 
 values at its declaration. The next thing to do is to define the known input and guesses for the first iteration of the 
@@ -154,4 +154,20 @@ This will produce the following output:
 ![image not found](images/analysis_d.png)
 
 # Cams
-The
+There are several kinds of motion types for a cam, but there is an important corollary when designing cams: *The jerk 
+function must be finite across the entire interval (360 degrees).* Usually, the cycloidal motion type achieves this 
+corollary, but it comes at a cost. It produces an acceleration and velocity that is typically higher than the other 
+motion types. More motion types are to come later (hopefully). 
+
+## Problem Statement
+Design a cam using cycloidal motion that has the following motion description: 
+
+* Dwell at zero displacement for 90 degrees
+* Rise 1 inch in 90 degrees
+* Dwell for 90 degrees
+* Fall 1 inch in 90 degrees
+
+The cam's angular velocity is 2*pi radians per second. Show the SVAJ diagram as well as the cam's profile. Size the cam
+for a roller follower with a radius of 1/2". Also size the cam for a flat faced follower using a conservative approach. 
+Get an animation for both a roller/flat faced follower. Finally, save the coordinates of the profile to a text file and 
+show the steps for creating a part in SolidWorks. 
