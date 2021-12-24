@@ -614,14 +614,15 @@ class RollerFollower:
 
     def plot(self):
         """Plots the displacement of the follower alongside the cam displacement"""
-        plt.plot(self.motion.thetas[self.indexes], self.S, label='Follower Displacement',
-                 **self.motion.cam_plot['default'])
-        plt.plot(self.motion.thetas, self.motion.S, **self.motion.appearance)
-        plt.title('Follower Displacement')
-        plt.xlabel(r'$\theta$ (degrees)')
-        plt.ylabel(r'$Displacement$')
-        plt.legend()
-        plt.grid()
+        fig, ax = plt.subplots()
+        ax.plot(self.motion.thetas[self.indexes], self.S, label='Follower Displacement',
+                **self.motion.cam_plot['default'])
+        ax.plot(self.motion.thetas, self.motion.S, **self.motion.appearance)
+        ax.set_title('Follower Displacement')
+        ax.set_xlabel(r'$\theta$ (degrees)')
+        ax.set_ylabel(r'$Displacement$')
+        ax.legend()
+        ax.grid()
         plt.show()
 
 
@@ -629,6 +630,7 @@ class FlatFollower:
     """
     See the documentation for RollerFollower
     """
+
     def __init__(self, motion, base, thetas, inc, face_width=0, length=0, width=0, eccentricity=0):
         self.indexes = range(0, thetas.size, inc)
         self.motion_length = len(self.indexes)
@@ -669,14 +671,15 @@ class FlatFollower:
         return (x_min, x_max), (y_min, y_max)
 
     def plot(self):
-        plt.plot(self.motion.thetas[self.indexes], self.S, label='Follower Displacement',
-                 **self.motion.cam_plot['default'])
-        plt.plot(self.motion.thetas, self.motion.S, **self.motion.appearance)
-        plt.title('Follower Displacement')
-        plt.xlabel(r'$\theta$ (degrees)')
-        plt.ylabel(r'$Displacement$')
-        plt.legend()
-        plt.grid()
+        fig, ax = plt.subplots()
+        ax.plot(self.motion.thetas[self.indexes], self.S, label='Follower Displacement',
+                **self.motion.cam_plot['default'])
+        ax.plot(self.motion.thetas, self.motion.S, **self.motion.appearance)
+        ax.set_title('Follower Displacement')
+        ax.set_xlabel(r'$\theta$ (degrees)')
+        ax.set_ylabel(r'$Displacement$')
+        ax.legend()
+        ax.grid()
         plt.show()
 
 

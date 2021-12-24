@@ -1,6 +1,5 @@
 import numpy as np
 from mechanism import Cam
-import matplotlib.pyplot as plt
 
 cam = Cam(motion=[
     ('Rise', 3, 90),
@@ -20,14 +19,12 @@ roller_analysis = cam.get_base_circle(kind='cycloidal', follower='roller', rolle
 cam.profile(kind='cycloidal', base=roller_analysis['Rb'], show_base=True, show_pitch=True, roller_radius=1)
 
 ani, follower = cam.get_animation(kind='cycloidal', base=4, inc=5, roller_radius=1)
-plt.show()
 
 # ani.save('../animations/cam1_roller.mp4', dpi=300)
 
 follower.plot()
 
 ani_, follower = cam.get_animation(kind='harmonic', base=4, inc=5, face_width=4)
-plt.show()
 
 # ani_.save('../animations/cam1.flat_face.mp4')
 
