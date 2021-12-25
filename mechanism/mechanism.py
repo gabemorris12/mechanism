@@ -1,10 +1,12 @@
-import numpy as np
+import json
+
 import matplotlib.pyplot as plt
+import numpy as np
+from matplotlib.animation import FuncAnimation
+from scipy.optimize import fsolve
+
 from .dataframe import Data
 from .vectors import VectorBase, APPEARANCE
-from scipy.optimize import fsolve
-from matplotlib.animation import FuncAnimation
-import json
 
 
 class Joint:
