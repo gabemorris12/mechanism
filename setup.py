@@ -1,9 +1,9 @@
 from setuptools import setup, find_packages
+import os
 
-VERSION = '0.0.5'
-LONG_DESCRIPTION = """
-The readme.md file on the original GitHub repository contains better graphics that detail the capabilities of this 
-package. This can be found here: https://github.com/gabemorris12/mechanism."""
+THIS_DIR = r'C:\Users\gmbra\Downloads\Python Programs\mechanism'
+
+VERSION = '0.0.6'
 
 CLASSIFIERS = [
     'Development Status :: 5 - Production/Stable',
@@ -12,6 +12,9 @@ CLASSIFIERS = [
     'Programming Language :: Python :: 3.10'
 ]
 
+with open(os.path.join(THIS_DIR, 'readme.md'), 'r') as f:
+    LONG_DESCRIPTION = f.read()
+
 setup(
     name='mechanism',
     version=VERSION,
@@ -19,6 +22,7 @@ setup(
     author_email='gabemorris1231@gmail.com',
     description='A package that provides a kinematic analysis of mechanisms, cams, and gears.',
     long_description=LONG_DESCRIPTION,
+    long_description_content_type='text/markdown',
     url='https://github.com/gabemorris12/mechanism',
     license='MIT',
     classifiers=CLASSIFIERS,
