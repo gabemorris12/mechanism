@@ -3,7 +3,7 @@ import os
 
 THIS_DIR = r'C:\Users\gmbra\Downloads\Python Programs\mechanism'
 
-VERSION = '0.0.6'
+VERSION = '0.0.7'
 
 CLASSIFIERS = [
     'Development Status :: 5 - Production/Stable',
