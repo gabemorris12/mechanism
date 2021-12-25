@@ -19,27 +19,27 @@ properties of an involute gear tooth. Similarly to the cam profile, the coordina
 
 `fourbarlinkage.py`
 
-![https://github.com/gabemorris12/mechanism/blob/master/images/fourbarlinkage.gif](images/fourbarlinkage.gif)
+![image not found](https://github.com/gabemorris12/mechanism/blob/master/images/fourbarlinkage.gif)
 
 `crunode_coupler.py`
 
-![https://github.com/gabemorris12/mechanism/blob/master/images/crunode_coupler.gif](images/crunode_coupler.gif)
+![image not found](https://github.com/gabemorris12/mechanism/blob/master/images/crunode_coupler.gif)
 
 `crankslider.py`
 
-![https://github.com/gabemorris12/mechanism/blob/master/images/crankslider.gif](images/crankslider.gif)
+![image not found](https://github.com/gabemorris12/mechanism/blob/master/images/crankslider.gif)
 
 `engine.py`
 
-![https://github.com/gabemorris12/mechanism/blob/master/images/engine.gif](images/engine.gif)
+![image not found](https://github.com/gabemorris12/mechanism/blob/master/images/engine.gif)
 
 `non_grashof.py`
 
-![https://github.com/gabemorris12/mechanism/blob/master/images/non_grashof.gif](images/non_grashof.gif)
+![image not found](https://github.com/gabemorris12/mechanism/blob/master/images/non_grashof.gif)
 
 `cam2_example.py`
 
-![https://github.com/gabemorris12/mechanism/blob/master/images/cam2.gif](images/cam2.gif)
+![image not found](https://github.com/gabemorris12/mechanism/blob/master/images/cam2.gif)
 
 # Linkages, Cranks, Couplers, and Rockers
 
@@ -49,13 +49,13 @@ package's usage, this walk through is provided.
 
 ## Four Bar Linkage Example
 
-![https://github.com/gabemorris12/mechanism/blob/master/images/fourbarlinkage.PNG](images/fourbarlinkage.PNG)
+![image not found](https://github.com/gabemorris12/mechanism/blob/master/images/fourbarlinkage.PNG)
 
 A four bar linkage is the basic building block of all mechanisms. This is similar to how the triangle is the basic
 building block of all structures. What defines a mechanism or structure is the system's overall number of degrees of
 freedom, and the number of degrees of freedom is determined via Kutzbach’s equation.
 
-![https://github.com/gabemorris12/mechanism/blob/master/images/fourbarlinkage_dof.PNG](images/fourbarlinkage_dof.PNG)
+![image not found](https://github.com/gabemorris12/mechanism/blob/master/images/fourbarlinkage_dof.PNG)
 
 Kutzbach's equation is: *total degrees of freedom = 3(#links - 1) - 2(J1) - J2* where J1 is the number of full joints
 (also known as a revolute joint) and J2 is the number of half joints. For this four bar linkage, there are 4 full
@@ -66,7 +66,7 @@ The number of degrees of freedom is: 3(4 - 1) - 2(4) = 1
 This means that we need one known input to find the unknowns of the system. This can be explained further with a diagram
 of the vectors that make up the four bar linkage.
 
-![https://github.com/gabemorris12/mechanism/blob/master/images/fourbarlinkage_loop.PNG](images/fourbarlinkage_loop.PNG)
+![image not found](https://github.com/gabemorris12/mechanism/blob/master/images/fourbarlinkage_loop.PNG)
 
 From the above image, the vector "a" is the crank. The speed at which it rotates will be considered as the input to the
 system, and thus, it is the defining parameter to the system.
@@ -180,8 +180,8 @@ plt.show()
 
 This will produce the following output:
 
-![https://github.com/gabemorris12/mechanism/blob/master/images/fourbar_animation.gif](images/fourbar_animation.gif)
-![https://github.com/gabemorris12/mechanism/blob/master/images/analysis_d.png](images/analysis_d.png)
+![image not found](https://github.com/gabemorris12/mechanism/blob/master/images/fourbar_animation.gif)
+![image not found](https://github.com/gabemorris12/mechanism/blob/master/images/analysis_d.png)
 
 # Cams
 
@@ -237,8 +237,8 @@ cam.svaj(kind='cycloidal')
 
 This produces the following:
 
-![https://github.com/gabemorris12/mechanism/blob/master/images/displacement_plot.png](images/displacement_plot.png)
-![https://github.com/gabemorris12/mechanism/blob/master/images/svaj.png](images/svaj.png)
+![image not found](https://github.com/gabemorris12/mechanism/blob/master/images/displacement_plot.png)
+![image not found](https://github.com/gabemorris12/mechanism/blob/master/images/svaj.png)
 
 Looking at the acceleration plot, there are no vertical lines. This means that there is no infinite derivative at any
 instant along the cam's profile; the jerk function is finite across each instant, making this an acceptable motion type.
@@ -255,8 +255,8 @@ cam.profile(kind='cycloidal', base=roller_analysis['Rb'], show_base=True, roller
 
 Output:
 
-![https://github.com/gabemorris12/mechanism/blob/master/images/pressure_angle.png](images/pressure_angle.png)
-![https://github.com/gabemorris12/mechanism/blob/master/images/roller_profile.png](images/roller_profile.png)
+![image not found](https://github.com/gabemorris12/mechanism/blob/master/images/pressure_angle.png)
+![image not found](https://github.com/gabemorris12/mechanism/blob/master/images/roller_profile.png)
 
 For a flat faced follower, the radius of curvature at the point of contact should be positive (or greater than 0.25")
 for all theta. There is an option to return the base radius such that the radius of curvature of the cam's profile is
@@ -271,7 +271,7 @@ cam.profile(kind='cycloidal', base=flat_analysis['Rb'], show_base=True)
 
 Output:
 
-![https://github.com/gabemorris12/mechanism/blob/master/images/conservative_flat.png](images/conservative_flat.png)
+![image not found](https://github.com/gabemorris12/mechanism/blob/master/images/conservative_flat.png)
 
 The base circle radius using the conservative approach is 2.21 and the minimum face width for the follower was found to
 be 2.55"
@@ -286,8 +286,8 @@ follower.plot()
 
 Output:
 
-![https://github.com/gabemorris12/mechanism/blob/master/images/cam_roller.gif](images/cam_roller.gif)
-![https://github.com/gabemorris12/mechanism/blob/master/images/roller_follower_displacement.png](images/roller_follower_displacement.png)
+![image not found](https://github.com/gabemorris12/mechanism/blob/master/images/cam_roller.gif)
+![image not found](https://github.com/gabemorris12/mechanism/blob/master/images/roller_follower_displacement.png)
 
 The graph above shows the actual follower displacement due to the circle having to always be tangent to the surface of
 the cam. Note that as a result of this physical limitation, the follower will have higher magnitudes of velocity and
@@ -303,8 +303,8 @@ follower.plot()
 
 Output:
 
-![https://github.com/gabemorris12/mechanism/blob/master/images/cam_flat.gif](images/cam_flat.gif)
-![https://github.com/gabemorris12/mechanism/blob/master/images/flat_follower_displacement.png](images/flat_follower_displacement.png)
+![image not found](https://github.com/gabemorris12/mechanism/blob/master/images/cam_flat.gif)
+![image not found](https://github.com/gabemorris12/mechanism/blob/master/images/flat_follower_displacement.png)
 
 ### Getting Coordinates into SolidWorks
 
@@ -316,18 +316,18 @@ cam.save_coordinates('cam_coordinates.txt', kind='cycloidal', base=1.3, solidwor
 
 Select `Curve Through XYZ Points`
 
-![https://github.com/gabemorris12/mechanism/blob/master/images/curve_xyz.png](images/curve_xyz.png)
+![image not found](https://github.com/gabemorris12/mechanism/blob/master/images/curve_xyz.png)
 
 The cam profile will always be extended to the front plane due to the manner in which SolidWorks defines the global
 coordinates. Next, select browse and choose the saved coordinate file.
 
-![https://github.com/gabemorris12/mechanism/blob/master/images/select_file.PNG](images/select_file.PNG)
+![image not found](https://github.com/gabemorris12/mechanism/blob/master/images/select_file.PNG)
 
 Create a sketch on the front plane. Select the curve and then convert entities. The sketch is now projected to the front
 plane. 
 
-![https://github.com/gabemorris12/mechanism/blob/master/images/front_plane.PNG](images/front_plane.PNG)
+![image not found](https://github.com/gabemorris12/mechanism/blob/master/images/front_plane.PNG)
 
 Notice that the sketch is not closed. Add a line to close the sketch, then extrude the sketch. 
 
-![https://github.com/gabemorris12/mechanism/blob/master/images/solidworks_cam.PNG](images/solidworks_cam.PNG)
+![image not found](https://github.com/gabemorris12/mechanism/blob/master/images/solidworks_cam.PNG)
