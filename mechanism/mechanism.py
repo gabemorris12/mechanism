@@ -544,9 +544,6 @@ class Mechanism:
         """
         assert isinstance(self.pos, np.ndarray), "pos input is not an ndarray."
 
-        for v in self.vectors:
-            v.get = v.pos.get
-
         guess1 = self.guess[0]
         guess2, guess3 = None, None
 
@@ -556,7 +553,7 @@ class Mechanism:
         if self.vel is not None and self.acc is not None:
             guess3 = self.guess[2]
 
-        for i in range(self.pos.size):
+        for i in range(self.pos.shape[0]):
             for v in self.vectors:
                 v.get = v.pos.get
 
@@ -661,7 +658,7 @@ class Mechanism:
             return list(plot_dict.values())
 
         # noinspection PyTypeChecker
-        return FuncAnimation(fig, animate, frames=range(self.pos.size), interval=50, blit=True, init_func=init)
+        return FuncAnimation(fig, animate, frames=range(self.pos.shape[0]), interval=50, blit=True, init_func=init)
 
     def __getitem__(self, item):
         return self.dic[item]

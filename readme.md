@@ -21,6 +21,10 @@ properties of an involute gear tooth. Similarly to the cam profile, the coordina
 
 ![image not found](https://github.com/gabemorris12/mechanism/raw/master/images/fourbarlinkage.gif)
 
+`fivebarlinkage.py`
+
+![image not found](https://github.com/gabemorris12/mechanism/raw/master/images/fivebarlinkage.gif)
+
 `crunode_coupler.py`
 
 ![image not found](https://github.com/gabemorris12/mechanism/raw/master/images/crunode_coupler.gif)

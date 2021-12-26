@@ -18,6 +18,7 @@ f = Vector((O, D), show=False)
 
 
 def loops(x, inp):
+    # Note: The way this is structured with the second loop equation is only appropriate for position analysis.
     temp = np.zeros((2, 2))
     temp[0] = a(inp) + c(x[0]) - d(x[1]) - b()
     temp[1] = a(inp) + e(x[0] + np.deg2rad(30)) - f(x[2], x[3])
