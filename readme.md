@@ -277,7 +277,7 @@ Output:
 
 ![image not found](https://github.com/gabemorris12/mechanism/raw/master/images/flat_profile.png)
 
-The base circle radius is found to be 1.893" and the minimum face width for the follower was found to be 2.55". 
+The base circle radius was found to be 1.893" and the minimum face width for the follower was found to be 2.55". 
 
 To get the roller animation, call this:
 
