@@ -16,7 +16,7 @@ roller_analysis = cam.get_base_circle(kind='cycloidal', follower='roller', rolle
 cam.profile(kind='cycloidal', base=roller_analysis['Rb'], show_base=True, roller_radius=1/2, show_pitch=True,
             loc='best')
 
-flat_analysis = cam.get_base_circle(kind='cycloidal', follower='flat', desired_min_rho=0.25, conservative_flat=True)
+flat_analysis = cam.get_base_circle(kind='cycloidal', follower='flat', desired_min_rho=0.25)
 print(flat_analysis['Rb'])
 print(flat_analysis['Min Face Width'])
 cam.profile(kind='cycloidal', base=flat_analysis['Rb'], show_base=True)

@@ -205,8 +205,8 @@ Design a cam using cycloidal motion that has the following motion description:
 
 The cam's angular velocity is 2*pi radians per second. Show the SVAJ diagram as well as the cam's profile. Size the cam
 for a roller follower with a radius of 1/2" with a maximum pressure angle of 30 degrees. Also size the cam for a flat
-faced follower using a conservative approach. Get an animation for both a roller/flat faced follower. Finally, save the
-coordinates of the profile to a text file and show the steps for creating a part in SolidWorks.
+faced follower. Get an animation for both a roller/flat faced follower. Finally, save the coordinates of the profile to
+a text file and show the steps for creating a part in SolidWorks.
 
 ## Solution
 
@@ -275,10 +275,9 @@ cam.profile(kind='cycloidal', base=flat_analysis['Rb'], show_base=True)
 
 Output:
 
-![image not found](https://github.com/gabemorris12/mechanism/raw/master/images/conservative_flat.png)
+![image not found](https://github.com/gabemorris12/mechanism/raw/master/images/flat_profile.png)
 
-The base circle radius using the conservative approach is 2.21 and the minimum face width for the follower was found to
-be 2.55"
+The base circle radius is found to be 1.893" and the minimum face width for the follower was found to be 2.55". 
 
 To get the roller animation, call this:
 
@@ -328,10 +327,10 @@ coordinates. Next, select browse and choose the saved coordinate file.
 ![image not found](https://github.com/gabemorris12/mechanism/raw/master/images/select_file.PNG)
 
 Create a sketch on the front plane. Select the curve and then convert entities. The sketch is now projected to the front
-plane. 
+plane.
 
 ![image not found](https://github.com/gabemorris12/mechanism/raw/master/images/front_plane.PNG)
 
-Notice that the sketch is not closed. Add a line to close the sketch, then extrude the sketch. 
+Notice that the sketch is not closed. Add a line to close the sketch, then extrude the sketch.
 
 ![image not found](https://github.com/gabemorris12/mechanism/raw/master/images/solidworks_cam.PNG)
