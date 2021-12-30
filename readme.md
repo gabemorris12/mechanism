@@ -150,11 +150,12 @@ mechanism = Mechanism(vectors=(a, b, c, d), input_vector=a, loops=loop, pos=thet
 ```
 
 This example is simpler than most others because there is only one loop equation. For multiple loop equations, it is
-important that the function returns a flattened array of the same length as there are unknown, and the return array
-corresponds to the input guess values. The second argument is the input. It is strongly encouraged to view the examples
-for the more rigorous structure of the loop function. The last thing to do is to call `mechanism.iterate()`, which is
-necessary if the input from `pos`, `vel`, and `acc` are arrays. If they are not arrays, then it is assumed that the
-mechanism at an instant is desired. If this is the case, then call `mechanism.calculate()` then call `mechanism.plot()`.
+important that the function returns a flattened array of the same length as there are unknown, and the indexing of the
+first array argument to the loop corresponds to the input guess values. The second argument is the input. It is strongly
+encouraged to view the examples for the more rigorous structure of the loop function. The last thing to do is to
+call `mechanism.iterate()`, which is necessary if the input from `pos`, `vel`, and `acc` are arrays. If they are not
+arrays, then it is assumed that the mechanism at an instant is desired. If this is the case, then
+call `mechanism.calculate()` then call `mechanism.plot()` (see `plot_at_instant.py`).
 
 ```python
 # Call mechanism.iterate() then get and show the animation
@@ -279,7 +280,7 @@ Output:
 
 ![image not found](https://github.com/gabemorris12/mechanism/raw/master/images/flat_profile.png)
 
-The base circle radius was found to be 1.893" and the minimum face width for the follower was found to be 2.55". 
+The base circle radius was found to be 1.893" and the minimum face width for the follower was found to be 2.55".
 
 To get the roller animation, call this:
 
