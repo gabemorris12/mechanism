@@ -267,7 +267,7 @@ for all theta. There is an option to return the base radius such that the radius
 positive for all values of theta (this is the conservative approach).
 
 ```python
-flat_analysis = cam.get_base_circle(kind='cycloidal', follower='flat', desired_min_rho=0.25, conservative_flat=True)
+flat_analysis = cam.get_base_circle(kind='cycloidal', follower='flat', desired_min_rho=0.25)
 print(flat_analysis['Rb'])
 print(flat_analysis['Min Face Width'])
 cam.profile(kind='cycloidal', base=flat_analysis['Rb'], show_base=True)
