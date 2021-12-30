@@ -15,6 +15,8 @@ this gets updated in the future with better options such as modified sinusoidal 
 Gears are not yet supported for this package. The goal in the future is to be able to design a custom gear by knowing
 properties of an involute gear tooth. Similarly to the cam profile, the coordinates could be extracted.
 
+Install this package via pip: `pip install mechanism`
+
 # Results/Examples
 
 `fourbarlinkage.py`
