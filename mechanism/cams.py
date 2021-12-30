@@ -631,9 +631,9 @@ class RollerFollower:
     def plot(self):
         """Plots the displacement of the follower alongside the cam displacement"""
         fig, ax = plt.subplots()
-        ax.plot(self.motion.thetas[self.indexes], self.S, label='Follower Displacement',
+        ax.plot(np.rad2deg(self.motion.thetas[self.indexes]), self.S, label='Follower Displacement',
                 **self.motion.cam_plot['default'])
-        ax.plot(self.motion.thetas, self.motion.S, **self.motion.appearance)
+        ax.plot(np.rad2deg(self.motion.thetas), self.motion.S, **self.motion.appearance)
         ax.set_title('Follower Displacement')
         ax.set_xlabel(r'$\theta$ (degrees)')
         ax.set_ylabel(r'$Displacement$')
@@ -688,9 +688,9 @@ class FlatFollower:
 
     def plot(self):
         fig, ax = plt.subplots()
-        ax.plot(self.motion.thetas[self.indexes], self.S, label='Follower Displacement',
+        ax.plot(np.rad2deg(self.motion.thetas[self.indexes]), self.S, label='Follower Displacement',
                 **self.motion.cam_plot['default'])
-        ax.plot(self.motion.thetas, self.motion.S, **self.motion.appearance)
+        ax.plot(np.rad2deg(self.motion.thetas), self.motion.S, **self.motion.appearance)
         ax.set_title('Follower Displacement')
         ax.set_xlabel(r'$\theta$ (degrees)')
         ax.set_ylabel(r'$Displacement$')
