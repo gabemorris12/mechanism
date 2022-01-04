@@ -4,6 +4,7 @@ import json
 import matplotlib.pyplot as plt
 import numpy as np
 
+from .dataframe import Data
 from .vectors import APPEARANCE
 
 
@@ -14,6 +15,43 @@ class Gear:
     gear_appearance = appearance['gear_plot']
 
     def __init__(self, N=0, pd=0, d=0, pressure_angle=20, agma=False, a=0, b=0, tooth_thickness=0, size=1000):
+        """
+        In order to fully define the gear,
+        - at least two of the following should be defined: N, pd, and d
+        - pressure angle needs to be declared (default value is 20)
+        - addendum and dedendum needs to be defined (declaring agma to be true will automatically do this)
+        - circular tooth thickness must be defined
+
+        :param N: The number of teeth of the gear
+        :param pd: The diametral pitch of the gear
+        :param d: The pitch diameter of the gear
+        :param pressure_angle: The angle at which the line of action propagates in the gear mesh
+        :param agma: If true, then the addendum, dedendum, and tooth thickness will be calculated according to their
+                     standards
+        :param a: The addendum of the tooth; the radial distance above the pitch radius
+        :param b: The dedendum of the tooth; the radial distance below the pitch radius; the difference between the
+                  dedendum and the addendum are the clearance
+        :param tooth_thickness: This is the arc length of the tooth across the pitch radius (not a straight line)
+        :param size: The size of one involute curve; make this smaller in some cases if SolidWorks says that the points
+                     are too close
+
+        Instance Attributes
+        -------------------
+        r_base: The base radius of the tooth
+        ra: The addendum radius of the tooth
+        rb: The dedendum radius of the tooth
+
+        The following are np.ndarrays of complex numbers; use np.real() and np.imag() to get x and y components:
+        involute_points: The involute curve in the vertical position
+        involute_reflection: The involute curve points reflected about the y-axis
+        tooth_profile: All the coordinates of the tooth starting on the right side
+
+        Useful Methods to Mention
+        -------------------------
+        plot: Shows a plot of the tooth profile
+        save_coordinates: Saves the coordinates to a file
+        rundown: Prints out a table of the key properties of the tooth
+        """
         self.pressure_angle = np.deg2rad(pressure_angle)
         assert isinstance(N, int), 'Number of teeth must be an integer.'
 
@@ -89,6 +127,12 @@ class Gear:
                                              np.flip(self.involute_reflection)))
 
     def plot(self, save='', **kwargs):
+        """
+        Shows a plot of the gear tooth.
+
+        :param save: The filepath to save the plot image to
+        :param kwargs: This gets past to figure.savefig()
+        """
         angle_start = np.angle(self.involute_points[0]) - np.deg2rad(5)
         angle_end = np.angle(self.involute_reflection[0]) + np.deg2rad(5)
         thetas = np.linspace(angle_start, angle_end, 1000)
@@ -111,6 +155,12 @@ class Gear:
         plt.show()
 
     def save_coordinates(self, file='', solidworks=False):
+        """
+        Saves the coordinates to a file.
+
+        :param file: The filepath to save the coordinates to
+        :param solidworks: It true, the coordinates will be saved in a format acceptable to SolidWorks
+        """
         with open(file, 'w', newline='') as f:
             if solidworks:
                 writer = csv.writer(f, delimiter='\t')
@@ -121,3 +171,19 @@ class Gear:
                 writer.writerow(['x', 'y'])
                 for c_num in self.tooth_profile:
                     writer.writerow([np.real(c_num), np.imag(c_num)])
+
+    def rundown(self):
+        """
+        Prints a table of the properties of the gear tooth.
+        """
+        info = [['Number of Teeth (N)', self.N],
+                ['Diametral Pitch (pd)', f'{self.pd:.5f}'],
+                ['Pitch Diameter (d)', f'{self.d:.5f}'],
+                ['Pitch Radius (r)', f'{self.r:.5f}'],
+                ['Pressure Angle (phi)', f'{np.rad2deg(self.pressure_angle):.5f}'],
+                ['Base Radius', f'{self.r_base:.5f}'],
+                ['Addendum (a)', f'{self.a:.5f}'],
+                ['Dedendum (b)', f'{self.b:.5f}'],
+                ['Circular Tooth Thickness', f'{self.tooth_thickness:.5f}']]
+
+        Data(info, headers=['Property', 'Value']).print(table=True)
