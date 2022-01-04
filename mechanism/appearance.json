@@ -65,5 +65,23 @@
       "lw": 2,
       "zorder": 2
     }
+  },
+  "gear_plot": {
+    "tooth": {
+      "color": "maroon",
+      "zorder": 3
+    },
+    "pitch": {
+      "color": "black",
+      "ls": "--",
+      "zorder": 2,
+      "label": "Pitch"
+    },
+    "base": {
+      "color": "deepskyblue",
+      "ls": "--",
+      "zorder": 2,
+      "label": "Base"
+    }
   }
 }

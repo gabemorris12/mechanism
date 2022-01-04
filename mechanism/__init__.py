@@ -13,8 +13,9 @@ from .mechanism import Joint, Mechanism, get_joints, get_sum
 from .dataframe import Data, read_csv, print_matrix
 from .vectors import Vector
 from .cams import Cam
+from .gears import Gear
 
 THIS_DIR = os.path.dirname(__file__)
 sys.path.append(THIS_DIR)
 
-__all__ = ['Data', 'read_csv', 'print_matrix', 'Joint', 'Vector', 'Mechanism', 'get_joints', 'get_sum', 'Cam']
+__all__ = ['Data', 'read_csv', 'print_matrix', 'Joint', 'Vector', 'Mechanism', 'get_joints', 'get_sum', 'Cam', 'Gear']
