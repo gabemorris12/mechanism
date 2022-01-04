@@ -1,5 +1,6 @@
 import csv
 import json
+import warnings
 
 import matplotlib.pyplot as plt
 import numpy as np
@@ -14,7 +15,8 @@ class Gear:
 
     gear_appearance = appearance['gear_plot']
 
-    def __init__(self, N=0, pd=0, d=0, pressure_angle=20, agma=False, a=0, b=0, tooth_thickness=0, size=1000):
+    def __init__(self, N=0, pd=0, d=0, pressure_angle=20, agma=False, a=0, b=0, tooth_thickness=0, ignore_warning=False,
+                 size=1000):
         """
         In order to fully define the gear,
         - at least two of the following should be defined: N, pd, and d
@@ -88,6 +90,12 @@ class Gear:
             self.tooth_thickness = tooth_thickness  # This is the arc length (not a straight line)
 
         self.ra, self.rb = self.r + self.a, self.r - self.b
+
+        if self.rb < self.r_base and not ignore_warning:
+            warnings.warn('The dedendum circle radius is less than the base circle radius. Undercutting will occur. To '
+                          'fix this, make the gear bigger by increasing the pitch diameter or number of teeth. To '
+                          'ignore this warning, pass "ignore=True" at the declaration of the gear object.',
+                          RuntimeWarning)
 
         if self.rb >= self.r_base:
             theta_min = np.sqrt((self.rb/self.r_base)**2 - 1)
