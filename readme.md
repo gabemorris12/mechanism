@@ -12,11 +12,11 @@ second, dwell for 1.5 seconds, fall 2 inches in 3 seconds). As of right now, the
 naive/uniform motion (how the cam shouldn't be designed), harmonic motion, and cycloidal motion. It is possible that
 this gets updated in the future with better options such as modified sinusoidal motion.
 
-For gears, this package is capable of providing the coordinates of the spur gear tooth profile given a set of 
+For gears, this package is capable of providing the coordinates of the spur gear tooth profile given a set of
 properties. The analysis is based on the diametral pitch, number of teeth, and pitch diameter if desired over the number
 of teeth. An argument for AGMA standards may be set to `True` if desired.
 
-Install this package via pip: `pip install mechanism`. 
+Install this package via pip: `pip install mechanism`.
 
 # Results/Examples
 
@@ -375,6 +375,20 @@ output:
 
 ![image not found](https://github.com/gabemorris12/mechanism/raw/master/images/gear60.PNG)
 
+| Property                 | Value    |
+|--------------------------|----------|
+| Number of Teeth (N)      | 60       |
+| Diametral Pitch (pd)     | 32.00000 |
+| Pitch Diameter (d)       | 1.87500  |
+| Pitch Radius (r)         | 0.93750  |
+| Pressure Angle (phi)     | 20.00000 |
+| Base Radius              | 0.88096  |
+| Addendum (a)             | 0.03125  |
+| Dedendum (b)             | 0.03906  |
+| Circular Tooth Thickness | 0.04846  |
+| Circular Space Width     | 0.04971  |
+| Circular Backlash        | 0.00125  |
+
 Keep in mind that the `size` argument refers to the size of the coordinates that make up the involute curve. The more
 points, the sharper it is, but SolidWorks sometimes struggles with points being too close together. To fix this issue,
 make the size smaller. The default value is 1000.
@@ -387,6 +401,5 @@ matches the units of the analysis.
 ![image not found](https://github.com/gabemorris12/mechanism/raw/master/images/gear60_compare.PNG)
 
 The results are a near identical match. If analyzed closely, the only difference is the tooth thickness. The gray gear
-(the resulting gear from this package) has a slightly larger tooth thickness compared to SolidWorks' gear. SolidWorks
-must have interpreted the circular tooth thickness incorrectly; nevertheless, a thicker tooth means less stress and an
-overall better design. 
+(the resulting gear from this package) has a slightly larger tooth thickness compared to SolidWorks' gear. This is due
+to the unknown way SolidWorks calculates the backlash of the gear. 

@@ -15,14 +15,17 @@ class Gear:
 
     gear_appearance = appearance['gear_plot']
 
-    def __init__(self, N=0, pd=0, d=0, pressure_angle=20, agma=False, a=0, b=0, tooth_thickness=0, ignore_warning=False,
+    def __init__(self, N=0, pd=0, d=0, pressure_angle=20, agma=False, a=0, b=0, backlash=0, ignore_warning=False,
                  size=1000):
         """
         In order to fully define the gear,
         - at least two of the following should be defined: N, pd, and d
         - pressure angle needs to be declared (default value is 20)
         - addendum and dedendum needs to be defined (declaring agma to be true will automatically do this)
-        - circular tooth thickness must be defined
+
+        If backlash is set to zero, and agma is set to True, a non-conservative approximation of the backlash will be
+        calculated. If it is desired to override the calculated value of the backlash when agma is set to true, then
+        provide a value of the backlash that is not equal to zero.
 
         :param N: The number of teeth of the gear
         :param pd: The diametral pitch of the gear
@@ -33,15 +36,20 @@ class Gear:
         :param a: The addendum of the tooth; the radial distance above the pitch radius
         :param b: The dedendum of the tooth; the radial distance below the pitch radius; the difference between the
                   dedendum and the addendum are the clearance
-        :param tooth_thickness: This is the arc length of the tooth across the pitch radius (not a straight line)
+        :param backlash: This is the difference between the space width and the tooth thickness. Both the space width
+                         and the tooth thickness are arc length measurements along the pitch circle. If backlash is not
+                         specified and agma is set to true, the backlash will give a non-conservative estimate for the
+                         backlash. Backlash, however, can be specified and agma set to true.
         :param size: The size of one involute curve; make this smaller in some cases if SolidWorks says that the points
-                     are too close
+                     are too close. Default value is 1000.
 
         Instance Attributes
         -------------------
         r_base: The base radius of the tooth
         ra: The addendum radius of the tooth
         rb: The dedendum radius of the tooth
+        tooth_thickness: The arc length of the tooth about the pitch circle
+        space_width: The arc length between two teeth about the pitch circle
 
         The following are np.ndarrays of complex numbers; use np.real() and np.imag() to get x and y components:
         involute_points: The involute curve in the vertical position
@@ -85,9 +93,25 @@ class Gear:
                                              'must be 20 degrees.'
             self.a, self.b = 1/self.pd, 1.25/self.pd
             self.tooth_thickness = 1.571/self.pd
+            self.space_width = 2*np.pi*self.r/self.N - self.tooth_thickness
+            self.backlash = self.space_width - self.tooth_thickness
+
+            if backlash:
+                self.backlash = backlash
+                assert backlash >= 0, 'Backlash cannot be negative. If so, there would be interference.'
+                self.tooth_thickness = np.pi*self.r/self.N - 1/2*self.backlash
+                self.space_width = self.backlash + self.tooth_thickness
+
+            if self.backlash < 0:
+                self.backlash = 0.04/self.pd
+                self.tooth_thickness = np.pi*self.r/self.N - 1/2*self.backlash
+                self.space_width = self.backlash + self.tooth_thickness
         else:
             self.a, self.b = a, b
-            self.tooth_thickness = tooth_thickness  # This is the arc length (not a straight line)
+            self.backlash = backlash
+            assert backlash >= 0, 'Backlash cannot be negative. If so, there would be interference.'
+            self.tooth_thickness = np.pi*self.r/self.N - 1/2*self.backlash
+            self.space_width = self.backlash + self.tooth_thickness
 
         self.ra, self.rb = self.r + self.a, self.r - self.b
 
@@ -112,8 +136,8 @@ class Gear:
         theta_pitch = np.angle((x_pitch + 1j*y_pitch))
 
         # Get the angle corresponding to the circular tooth thickness and the amount needed to rotate the tooth
-        circular_pitch_angle = self.tooth_thickness/self.r
-        rotation = np.pi/2 - theta_pitch - circular_pitch_angle/2
+        pitch_angle = self.tooth_thickness/self.r
+        rotation = np.pi/2 - theta_pitch - pitch_angle/2
 
         # Get the involute curve. Create just a linear relationship if the dedendum radius is less than the base radius.
         thetas = np.linspace(theta_min, theta_max, size)
@@ -192,6 +216,8 @@ class Gear:
                 ['Base Radius', f'{self.r_base:.5f}'],
                 ['Addendum (a)', f'{self.a:.5f}'],
                 ['Dedendum (b)', f'{self.b:.5f}'],
-                ['Circular Tooth Thickness', f'{self.tooth_thickness:.5f}']]
+                ['Circular Tooth Thickness', f'{self.tooth_thickness:.5f}'],
+                ['Circular Space Width', f'{self.space_width:.5f}'],
+                ['Circular Backlash', f'{self.backlash:.5f}']]
 
         Data(info, headers=['Property', 'Value']).print(table=True)
