@@ -9,7 +9,7 @@ from .dataframe import Data
 from .vectors import APPEARANCE
 
 
-class Gear:
+class SpurGear:
     with open(APPEARANCE, 'r') as f:
         appearance = json.load(f)
 
@@ -148,7 +148,7 @@ class Gear:
         involute_points = np.insert(involute_points, 0, self.rb + 0j) if self.rb < self.r_base else involute_points
 
         # Rotate the involute curve and get the reflection/addendum circle
-        self.involute_points = np.abs(involute_points)*np.exp(1j*(np.angle(involute_points) + rotation))
+        self.involute_points = rotate(involute_points, rotation)
         self.involute_reflection = -1*np.real(self.involute_points) + 1j*np.imag(self.involute_points)
         addendum_start = np.angle(self.involute_points[-1])
         addendum_end = np.angle(self.involute_reflection[-1])
@@ -165,17 +165,25 @@ class Gear:
         :param save: The filepath to save the plot image to
         :param kwargs: This gets past to figure.savefig()
         """
-        angle_start = np.angle(self.involute_points[0]) - np.deg2rad(5)
-        angle_end = np.angle(self.involute_reflection[0]) + np.deg2rad(5)
+        between_teeth = 2*np.pi/self.N
+        dedendum_angle = np.angle(self.involute_reflection[0]) - np.angle(self.involute_points[0])
+        cushion_angle = (between_teeth - dedendum_angle)/2
+
+        angle_start = np.angle(self.involute_points[0]) - cushion_angle
+        angle_end = np.angle(self.involute_reflection[0]) + cushion_angle
+        dedendum_draw = np.linspace(angle_start, np.angle(self.involute_points[0]), 1000)
         thetas = np.linspace(angle_start, angle_end, 1000)
 
         base = self.r_base*np.exp(1j*thetas)
         pitch = self.r*np.exp(1j*thetas)
+        dedendum = self.rb*np.exp(1j*dedendum_draw)
 
         fig, ax = plt.subplots()
-        ax.plot(np.real(base), np.imag(base), **Gear.gear_appearance['base'])
-        ax.plot(np.real(pitch), np.imag(pitch), **Gear.gear_appearance['pitch'])
-        ax.plot(np.real(self.tooth_profile), np.imag(self.tooth_profile), **Gear.gear_appearance['tooth'])
+        ax.plot(np.real(base), np.imag(base), **SpurGear.gear_appearance['base'])
+        ax.plot(np.real(pitch), np.imag(pitch), **SpurGear.gear_appearance['pitch'])
+        ax.plot(np.real(self.tooth_profile), np.imag(self.tooth_profile), **SpurGear.gear_appearance['tooth'])
+        ax.plot(np.real(dedendum), np.imag(dedendum), **SpurGear.gear_appearance['tooth'])
+        ax.plot(-1*np.real(dedendum), np.imag(dedendum), **SpurGear.gear_appearance['tooth'])
 
         ax.set_aspect('equal')
         ax.legend()
@@ -221,3 +229,14 @@ class Gear:
                 ['Circular Backlash', f'{self.backlash:.5f}']]
 
         Data(info, headers=['Property', 'Value']).print(table=True)
+
+
+def rotate(coords, rotation):
+    """
+    Rotates a set of complex coordinates.
+
+    :param coords: An np.ndarray of complex numbers
+    :param rotation: The angle of rotation of the coordinates in radians
+    :return: An np.ndarray of complex numbers that is rotated the amount of 'rotation'
+    """
+    return np.abs(coords)*np.exp(1j*(np.angle(coords) + rotation))
