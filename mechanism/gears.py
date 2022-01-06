@@ -185,6 +185,7 @@ class SpurGear:
         ax.plot(np.real(dedendum), np.imag(dedendum), **SpurGear.gear_appearance['tooth'])
         ax.plot(-1*np.real(dedendum), np.imag(dedendum), **SpurGear.gear_appearance['tooth'])
 
+        ax.set_title('Spur Gear Tooth Profile')
         ax.set_aspect('equal')
         ax.legend()
         ax.grid()
