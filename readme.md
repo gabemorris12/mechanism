@@ -12,9 +12,10 @@ second, dwell for 1.5 seconds, fall 2 inches in 3 seconds). As of right now, the
 naive/uniform motion (how the cam shouldn't be designed), harmonic motion, and cycloidal motion. It is possible that
 this gets updated in the future with better options such as modified sinusoidal motion.
 
-For gears, this package is capable of providing the coordinates of the spur gear tooth profile given a set of
+For gears, this package is capable of providing the coordinates of a spur gear tooth profile given a set of
 properties. The analysis is based on the diametral pitch, number of teeth, and pitch diameter if desired over the number
-of teeth. An argument for AGMA standards may be set to `True` if desired.
+of teeth. An argument for AGMA standards may be set to `True` if desired. HELICAL GEARS NOT READY AND PROBABLY 
+NEVER WILL BE. I never learned how they are sized and those properties are not in the book. 
 
 Install this package via pip: `pip install mechanism`.
 

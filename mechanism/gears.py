@@ -1,5 +1,6 @@
 import csv
 import json
+import os
 import warnings
 
 import matplotlib.pyplot as plt
@@ -230,6 +231,106 @@ class SpurGear:
                 ['Circular Backlash', f'{self.backlash:.5f}']]
 
         Data(info, headers=['Property', 'Value']).print(table=True)
+
+
+class HelicalGear(SpurGear):
+    def __init__(self, N=0, pd=0, d=0, helix_angle=0, face_width=0, hand='right', pressure_angle=20, agma=False, a=0,
+                 b=0, backlash=0, ignore_warning=False, size=1000):
+        SpurGear.__init__(self, N=N, pd=pd, d=d, pressure_angle=pressure_angle, agma=agma, a=a, b=b, backlash=backlash,
+                          ignore_warning=ignore_warning, size=size)
+        self.helix_angle = np.deg2rad(helix_angle) if hand == 'right' else -np.deg2rad(helix_angle)
+        self.face_width = face_width
+
+        theta_start = np.arccos(-self.face_width/(2*self.r*np.tan(np.pi/2 - self.helix_angle)))
+        theta_end = np.arccos(self.face_width/(2*self.r*np.tan(np.pi/2 - self.helix_angle)))
+
+        thetas = np.linspace(theta_start, theta_end, size)
+
+        self.x_sw = self.r*np.cos(thetas)
+        self.y_sw = self.r*np.sin(thetas)
+        self.z_sw = -np.tan(np.pi/2 - self.helix_angle)*self.r*np.cos(thetas)
+
+        self.x_plt = np.copy(self.x_sw)
+        self.y_plt = -self.z_sw
+        self.z_plt = np.copy(self.y_sw)
+
+        self.tooth_profile_helical_start = rotate(self.tooth_profile, theta_start - np.pi/2)
+        self.tooth_profile_helical_end = rotate(self.tooth_profile, theta_end - np.pi/2)
+
+    def plot(self, save='', **kwargs):
+        angle_start = np.amin((np.angle(self.tooth_profile_helical_start), np.angle(self.tooth_profile_helical_end)))
+        angle_end = np.amax((np.angle(self.tooth_profile_helical_start), np.angle(self.tooth_profile_helical_end)))
+
+        thetas = np.linspace(angle_start, angle_end, 1000)
+
+        pitch = self.r*np.exp(1j*thetas)
+        base = self.r_base*np.exp(1j*thetas)
+
+        fig, ax = plt.subplots()
+        ax.plot(np.real(self.tooth_profile_helical_start), np.imag(self.tooth_profile_helical_start),
+                **HelicalGear.gear_appearance['tooth'])
+        ax.plot(np.real(self.tooth_profile_helical_end), np.imag(self.tooth_profile_helical_end), ls='--',
+                **HelicalGear.gear_appearance['tooth'])
+        ax.plot(np.real(pitch), np.imag(pitch), **HelicalGear.gear_appearance['pitch'])
+        ax.plot(np.real(base), np.imag(base), **HelicalGear.gear_appearance['base'])
+
+        ax.set_title('Helical Gear Tooth Profile')
+        ax.set_aspect('equal')
+        ax.legend()
+        ax.grid()
+
+        if save:
+            fig.savefig(save, **kwargs)
+
+        plt.show()
+
+    def plot3d(self):
+        fig, ax = plt.subplots(subplot_kw=dict(projection='3d'))
+        ax.set_box_aspect([ax.get_box_aspect()[0]]*3)
+        ax.plot3D(self.x_plt, self.y_plt, self.z_plt)
+        print(ax.get_box_aspect())
+        plt.show()
+
+    def save_coordinates(self, file='', solidworks=False):
+        name, ext = os.path.splitext(file)
+        tooth_profile1 = open(f'{name}-profile1{ext}', 'w', newline='')
+        tooth_profile2 = open(f'{name}-profile2{ext}', 'w', newline='')
+        tooth_path = open(f'{name}-path{ext}', 'w', newline='')
+
+        if solidworks:
+            profile1_writer = csv.writer(tooth_profile1, delimiter='\t')
+            profile2_writer = csv.writer(tooth_profile2, delimiter='\t')
+            path_writer = csv.writer(tooth_path, delimiter='\t')
+            for c_num in self.tooth_profile_helical_start:
+                profile1_writer.writerow([f'{np.real(c_num):.8f}', f'{np.imag(c_num):.8f}', f'{self.face_width/2:.8f}'])
+
+            for c_num in self.tooth_profile_helical_end:
+                profile2_writer.writerow([f'{np.real(c_num):.8f}', f'{np.imag(c_num):.8f}',
+                                          f'{-self.face_width/2:.8f}'])
+
+            for x, y, z in zip(self.x_sw, self.y_sw, self.z_sw):
+                path_writer.writerow([f'{x:.8f}', f'{y:.8f}', f'{z:.8f}'])
+        else:
+            profile1_writer = csv.writer(tooth_profile1, delimiter='\t')
+            profile2_writer = csv.writer(tooth_profile2, delimiter='\t')
+            path_writer = csv.writer(tooth_path, delimiter='\t')
+
+            profile1_writer.writerow(['x', 'y'])
+            profile2_writer.writerow(['x', 'y'])
+            path_writer.writerow(['x', 'y', 'z'])
+
+            for c_num in self.tooth_profile_helical_start:
+                profile1_writer.writerow([np.real(c_num), np.imag(c_num)])
+
+            for c_num in self.tooth_profile_helical_end:
+                profile2_writer.writerow([np.real(c_num), np.imag(c_num)])
+
+            for x, y, z in zip(self.x_sw, self.y_sw, self.z_sw):
+                path_writer.writerow([x, y, z])
+
+        tooth_profile1.close()
+        tooth_profile2.close()
+        tooth_path.close()
 
 
 def rotate(coords, rotation):
