@@ -158,12 +158,10 @@ class SpurGear:
         self.tooth_profile = np.concatenate((self.involute_points, addendum_circle[1:-1],
                                              np.flip(self.involute_reflection)))
 
-    def plot(self, save='', **kwargs):
+    def plot(self):
         """
         Shows a plot of the gear tooth.
-
-        :param save: The filepath to save the plot image to
-        :param kwargs: This gets past to figure.savefig()
+        :return: figure and axes objects
         """
         between_teeth = 2*np.pi/self.N
         dedendum_angle = np.angle(self.involute_reflection[0]) - np.angle(self.involute_points[0])
@@ -188,12 +186,8 @@ class SpurGear:
         ax.set_title('Spur Gear Tooth Profile')
         ax.set_aspect('equal')
         ax.legend()
-        ax.grid()
 
-        if save:
-            fig.savefig(save, **kwargs)
-
-        plt.show()
+        return fig, ax
 
     def save_coordinates(self, file='', solidworks=False):
         """

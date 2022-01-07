@@ -379,9 +379,13 @@ Define a gear object with the known information and save the coordinates to a fi
 
 ```python
 from mechanism import SpurGear
+import matplotlib.pyplot as plt
 
 gear = SpurGear(N=60, pd=32, agma=True, size=500)
-gear.plot(save='../images/gear60.PNG', dpi=240)
+fig, ax = gear.plot()
+ax.grid()
+fig.savefig('../images/gear60.PNG', dpi=240)
+plt.show()
 gear.save_coordinates(file='gear_tooth_coordinates.txt', solidworks=True)
 gear.rundown()
 ```
