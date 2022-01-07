@@ -122,6 +122,7 @@ class Cam:
     def plot(self, kind=''):
         """
         :param kind: The type of motion desired as a string (i.e. 'cycloidal')
+        :return: figure and axes objects
         """
         fig, ax = plt.subplots()
 
@@ -137,12 +138,13 @@ class Cam:
 
         ax.set_xlabel(r'$\theta$ (degrees)')
         ax.set_ylabel(r'$Displacement$')
-        ax.grid()
-        plt.show()
+
+        return fig, ax
 
     def svaj(self, kind=''):
         """
         :param kind: The type of motion desired as a string
+        :return: figure and axes objects
         """
         fig, ax = plt.subplots(nrows=4, ncols=1)
         assert self.omega is not None, Exception(
@@ -161,17 +163,20 @@ class Cam:
         ax[3].set_ylabel(r'$Jerk$')
 
         fig.set_size_inches(7, 7.75)
-        plt.xlabel(r'$\theta$ (degrees)')
-        plt.show()
+        ax[3].set_xlabel(r'$\theta$ (degrees)')
 
-    def profile(self, kind='', base=0, show_base=False, roller_radius=0, show_pitch=False, loc=''):
+        return fig, ax
+
+    def profile(self, kind='', base=0, show_base=False, roller_radius=0, show_pitch=False):
         """
+        This will not call ax.legend() because that is not always desired.
+
         :param kind: The type of motion desired
         :param base: The base circle radius of the cam
         :param show_base: If true, the base circle will be present in the plot
         :param roller_radius: To be used if the pitch curve is desired
         :param show_pitch: If true, the pitch curve will be present in the plot (roller_radius must be given)
-        :param loc: The location of the legend. If none, there will be no legend. See matplotlib legend documentation
+        :return: figure and axes object
         """
         fig, ax = plt.subplots()
 
@@ -197,10 +202,8 @@ class Cam:
             ax.plot(np.real(c_nums), np.imag(c_nums), **self.naive.cam_plot['base_circle'])
 
         ax.set_aspect('equal')
-        if loc:
-            ax.legend(loc=loc)
-        ax.grid()
-        plt.show()
+
+        return fig, ax
 
     def get_base_circle(self, kind='', follower='', roller_radius=0, eccentricity=0, max_pressure_angle=0,
                         desired_min_rho=0, conservative_flat=False, plot=False):
@@ -335,13 +338,12 @@ class Cam:
         :param length: The length of the follower (optional)
         :param width: The width of the follower (optional)
         :param eccentricity: The offset of the follower
-        :return: animation object and follower object
+        :return: animation, figure, axes, and follower object
         """
         motion_type = self.get_motion_type(kind)
 
         fig, ax = plt.subplots()
         ax.set_aspect('equal')
-        ax.grid()
         ax.set_title(f'{motion_type} Animation')
 
         if roller_radius:
@@ -384,7 +386,7 @@ class Cam:
 
         # noinspection PyTypeChecker
         return FuncAnimation(fig, animate, frames=range(follower.motion_length), interval=20, blit=True,
-                             init_func=init), follower
+                             init_func=init), fig, ax, follower
 
 
 class Motion:
@@ -629,7 +631,10 @@ class RollerFollower:
         return (x_min, x_max), (y_min, y_max)
 
     def plot(self):
-        """Plots the displacement of the follower alongside the cam displacement"""
+        """
+        Plots the displacement of the follower alongside the cam displacement
+
+        :return: figure and axes object"""
         fig, ax = plt.subplots()
         ax.plot(np.rad2deg(self.motion.thetas[self.indexes]), self.S, label='Follower Displacement',
                 **self.motion.cam_plot['default'])
@@ -638,8 +643,7 @@ class RollerFollower:
         ax.set_xlabel(r'$\theta$ (degrees)')
         ax.set_ylabel(r'$Displacement$')
         ax.legend()
-        ax.grid()
-        plt.show()
+        return fig, ax
 
 
 class FlatFollower:
@@ -695,8 +699,8 @@ class FlatFollower:
         ax.set_xlabel(r'$\theta$ (degrees)')
         ax.set_ylabel(r'$Displacement$')
         ax.legend()
-        ax.grid()
-        plt.show()
+
+        return fig, ax
 
 
 def dwell_maker(h):

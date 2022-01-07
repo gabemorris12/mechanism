@@ -161,7 +161,8 @@ call `mechanism.calculate()` then call `mechanism.plot()` (see `plot_at_instant.
 ```python
 # Call mechanism.iterate() then get and show the animation
 mechanism.iterate()
-ani = mechanism.get_animation()
+ani, fig_, ax_ = mechanism.get_animation()
+ax_.grid()
 
 # Plot the angles, angular velocity, and angular acceleration of vector d
 fig, ax = plt.subplots(nrows=3, ncols=1)
@@ -219,6 +220,7 @@ Begin by creating a cam object with the correct motion description.
 ```python
 import numpy as np
 from mechanism import Cam
+import matplotlib.pyplot as plt
 
 cam = Cam(motion=[
     ('Dwell', 90),
@@ -239,8 +241,10 @@ velocity is then required if conducting further analysis via SVAJ.
 This is all that's required to call the following methods.
 
 ```python
-cam.plot(kind='all')
-cam.svaj(kind='cycloidal')
+fig1, ax1 = cam.plot(kind='all')
+ax1.grid()
+fig2, ax2 = cam.svaj(kind='cycloidal')
+plt.show()
 ```
 
 This produces the following:
@@ -257,8 +261,10 @@ angle can be conducted to determine the base circle of the cam.
 ```python
 roller_analysis = cam.get_base_circle(kind='cycloidal', follower='roller', roller_radius=1/2, max_pressure_angle=30,
                                       plot=True)
-cam.profile(kind='cycloidal', base=roller_analysis['Rb'], show_base=True, roller_radius=1/2, show_pitch=True,
-            loc='best')
+fig3, ax3 = cam.profile(kind='cycloidal', base=roller_analysis['Rb'], show_base=True, roller_radius=1/2,
+                        show_pitch=True)
+ax3.grid()
+plt.show()
 ```
 
 Output:
@@ -274,7 +280,9 @@ positive for all values of theta (this is the conservative approach).
 flat_analysis = cam.get_base_circle(kind='cycloidal', follower='flat', desired_min_rho=0.25)
 print(flat_analysis['Rb'])
 print(flat_analysis['Min Face Width'])
-cam.profile(kind='cycloidal', base=flat_analysis['Rb'], show_base=True)
+fig4, ax4 = cam.profile(kind='cycloidal', base=flat_analysis['Rb'], show_base=True)
+ax4.grid()
+plt.show()
 ```
 
 Output:
@@ -286,9 +294,12 @@ The base circle radius was found to be 1.893" and the minimum face width for the
 To get the roller animation, call this:
 
 ```python
-ani, follower = cam.get_animation(kind='cycloidal', base=roller_analysis['Rb'], roller_radius=1/2, length=2, width=3/8,
-                                  inc=5)
-follower.plot()
+ani, fig5, ax5, follower = cam.get_animation(kind='cycloidal', base=roller_analysis['Rb'], roller_radius=1/2, length=2,
+                                             width=3/8, inc=5)
+ax5.grid()
+fig6, ax6 = follower.plot()
+ax6.grid()
+plt.show()
 ```
 
 Output:
@@ -303,9 +314,12 @@ acceleration.
 For the flat faced follower,
 
 ```python
-ani_flat, follower = cam.get_animation(kind='cycloidal', base=flat_analysis['Rb'], face_width=2.75, length=2, width=3/8,
-                                       inc=5)
-follower.plot()
+ani_flat, fig7, ax7, follower = cam.get_animation(kind='cycloidal', base=flat_analysis['Rb'], face_width=2.75, length=2,
+                                                  width=3/8, inc=5)
+ax7.grid()
+fig8, ax8 = follower.plot()
+ax8.grid()
+plt.show()
 ```
 
 Output:

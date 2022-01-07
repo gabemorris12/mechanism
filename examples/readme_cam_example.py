@@ -1,5 +1,6 @@
 import numpy as np
 from mechanism import Cam
+import matplotlib.pyplot as plt
 
 cam = Cam(motion=[
     ('Dwell', 90),
@@ -8,25 +9,37 @@ cam = Cam(motion=[
     ('Fall', 1, 90)
 ], degrees=True, omega=2*np.pi)
 
-cam.plot(kind='all')
-cam.svaj(kind='cycloidal')
+fig1, ax1 = cam.plot(kind='all')
+ax1.grid()
+fig2, ax2 = cam.svaj(kind='cycloidal')
+plt.show()
 
 roller_analysis = cam.get_base_circle(kind='cycloidal', follower='roller', roller_radius=1/2, max_pressure_angle=30,
                                       plot=True)
-cam.profile(kind='cycloidal', base=roller_analysis['Rb'], show_base=True, roller_radius=1/2, show_pitch=True,
-            loc='best')
+fig3, ax3 = cam.profile(kind='cycloidal', base=roller_analysis['Rb'], show_base=True, roller_radius=1/2,
+                        show_pitch=True)
+ax3.grid()
+plt.show()
 
 flat_analysis = cam.get_base_circle(kind='cycloidal', follower='flat', desired_min_rho=0.25)
 print(flat_analysis['Rb'])
 print(flat_analysis['Min Face Width'])
-cam.profile(kind='cycloidal', base=flat_analysis['Rb'], show_base=True)
+fig4, ax4 = cam.profile(kind='cycloidal', base=flat_analysis['Rb'], show_base=True)
+ax4.grid()
+plt.show()
 
-ani, follower = cam.get_animation(kind='cycloidal', base=roller_analysis['Rb'], roller_radius=1/2, length=2, width=3/8,
-                                  inc=5)
-follower.plot()
+ani, fig5, ax5, follower = cam.get_animation(kind='cycloidal', base=roller_analysis['Rb'], roller_radius=1/2, length=2,
+                                             width=3/8, inc=5)
+ax5.grid()
+fig6, ax6 = follower.plot()
+ax6.grid()
+plt.show()
 
-ani_flat, follower = cam.get_animation(kind='cycloidal', base=flat_analysis['Rb'], face_width=2.75, length=2, width=3/8,
-                                       inc=5)
-follower.plot()
+ani_flat, fig7, ax7, follower = cam.get_animation(kind='cycloidal', base=flat_analysis['Rb'], face_width=2.75, length=2,
+                                                  width=3/8, inc=5)
+ax7.grid()
+fig8, ax8 = follower.plot()
+ax8.grid()
+plt.show()
 
 # cam.save_coordinates('cam_coordinates.txt', kind='cycloidal', base=1.3, solidworks=True)
