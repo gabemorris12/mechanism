@@ -24,7 +24,11 @@ def loops(x, i):
 mechanism = Mechanism(vectors=(a, b, c, d, e), input_vector=a, guess=(guess,), pos=np.stack((theta_a, theta_b), axis=1),
                       loops=loops)
 mechanism.iterate()
-ani = mechanism.get_animation()
+ani, fig, ax = mechanism.get_animation()
+
+ax.set_title('Five Bar Linkage')
+ax.grid()
+
 plt.show()
 
 # ani.save('../animations/fivebarlinkage.mp4', dpi=300)

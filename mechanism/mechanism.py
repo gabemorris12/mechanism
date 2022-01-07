@@ -499,8 +499,7 @@ class Mechanism:
             if not velocity and not acceleration and show_joints:
                 ax.annotate(j.name, (j.x_pos, j.y_pos), size='large')
 
-        ax.grid()
-        plt.show()
+        return fig, ax
 
     def test(self):
         """
@@ -509,7 +508,7 @@ class Mechanism:
         print('Distances:')
         for v in self.vectors:
             j1, j2 = v.joints
-            print(f'- {j1} to {j2}: {np.sqrt((j1.x_pos - j2.x_pos) ** 2 + (j1.y_pos - j2.y_pos) ** 2)}')
+            print(f'- {j1} to {j2}: {np.sqrt((j1.x_pos - j2.x_pos)**2 + (j1.y_pos - j2.y_pos)**2)}')
 
     def calculate(self):
         """
@@ -622,10 +621,10 @@ class Mechanism:
         return (x_min, x_max), (y_min, y_max)
 
     def get_animation(self, cushion=1):
-        # Todo: Consider adding a step value argument for the frames input to have a large data set yet control the speed
+        # Todo: A step value could be added here to adjust speed
         """
         :param: cushion: int; Add a cushion around the plot.
-        :return: An animation object of the mechanism.
+        :return: An animation, figure, and axes object.
         """
         fig, ax = plt.subplots()
         ax.set_aspect('equal')
@@ -633,7 +632,6 @@ class Mechanism:
 
         ax.set_xlim(x_limits[0] - cushion, x_limits[1] + cushion)
         ax.set_ylim(y_limits[0] - cushion, y_limits[1] + cushion)
-        ax.grid()
 
         plot_dict = {}
         for v in self.vectors:
@@ -658,7 +656,8 @@ class Mechanism:
             return list(plot_dict.values())
 
         # noinspection PyTypeChecker
-        return FuncAnimation(fig, animate, frames=range(self.pos.shape[0]), interval=50, blit=True, init_func=init)
+        return FuncAnimation(fig, animate, frames=range(self.pos.shape[0]), interval=50, blit=True,
+                             init_func=init), fig, ax
 
     def __getitem__(self, item):
         return self.dic[item]

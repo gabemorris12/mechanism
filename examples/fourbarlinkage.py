@@ -31,7 +31,11 @@ mechanism = Mechanism(vectors=(a, b, c, d, e, f), input_vector=a, pos=t2, guess=
                       loops=loops)
 
 mechanism.iterate()
-ani = mechanism.get_animation()
+ani, fig, ax = mechanism.get_animation()
+
+ax.set_title('Four Bar Linkage')
+ax.grid()
+
 plt.show()
 
 # ani.save('../animations/fourbarlinkage.mp4', dpi=300)

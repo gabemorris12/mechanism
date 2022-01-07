@@ -26,7 +26,11 @@ mechanism = Mechanism(vectors=(a, b, c, d, e, f), input_vector=a, pos=t2, guess=
                       loops=loops)
 
 mechanism.iterate()
-ani = mechanism.get_animation(cushion=1/2)
+ani, fig, ax = mechanism.get_animation(cushion=1/2)
+
+ax.set_title('Crunode Coupler Curve')
+ax.grid()
+
 plt.show()
 
 # ani.save('../animations/crunode_coupler.mp4')

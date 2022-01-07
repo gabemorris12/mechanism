@@ -81,7 +81,11 @@ acc_guess = [0.00029789311514143526, -0.0017432963189026164, -2.213891507590676e
 table = Mechanism(vectors=[eval(f'v{i}') for i in range(1, 15)], input_vector=v1, loops=loops, pos=v1_pos,
                   vel=v1_vel, acc=v1_acc, guess=[pos_guess, vel_guess, acc_guess])
 table.iterate()
-ani = table.get_animation(cushion=0.25)
+ani, fig, ax = table.get_animation(cushion=0.25)
+
+ax.set_title('Extendable Table')
+ax.grid()
+
 plt.show()
 
 # Show the velocity of the leaf and table tops.

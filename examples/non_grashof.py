@@ -40,7 +40,11 @@ mechanism = Mechanism(vectors=(a, b, c, d, e, f, g, h, i, j, k, l), input_vector
                       pos=thetas, vel=omegas, acc=alphas, guess=(guess1, guess2, guess3))
 
 mechanism.iterate()
-ani = mechanism.get_animation()
+ani, fig, ax = mechanism.get_animation()
+
+ax.set_title('Non Grashof Mechanism')
+ax.grid()
+
 plt.show()
 
 # ani.save('../animations/non_grashof.mp4', dpi=300)

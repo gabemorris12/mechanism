@@ -40,7 +40,11 @@ a2_t = np.zeros(250)
 mechanism = Mechanism(vectors=(a, b, c, d, e, x, y), input_vector=a, guess=(guess1, guess2, guess3), pos=t2_t,
                       vel=w2_t, acc=a2_t, loops=loops)
 mechanism.iterate()
-ani = mechanism.get_animation(cushion=0.5)
+ani, fig, ax = mechanism.get_animation(cushion=0.5)
+
+ax.set_title('Engine')
+ax.grid()
+
 plt.show()
 
 # ani.save('../animations/engine.mp4', dpi=300)
