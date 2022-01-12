@@ -119,12 +119,16 @@ class Cam:
             conditions.append(np.logical_and(t >= self.shifts[i - 1], t < self.shifts[i]))
         return conditions
 
-    def plot(self, kind=''):
+    def plot(self, kind='', grid=True):
         """
         :param kind: The type of motion desired as a string (i.e. 'cycloidal')
+        :param grid: If true, the grid will be added to the axes object
         :return: figure and axes objects
         """
         fig, ax = plt.subplots()
+
+        if grid:
+            ax.grid(zorder=1)
 
         if kind == 'all':
             for obj in (self.naive, self.harmonic, self.cycloidal):
@@ -167,7 +171,7 @@ class Cam:
 
         return fig, ax
 
-    def profile(self, kind='', base=0, show_base=False, roller_radius=0, show_pitch=False):
+    def profile(self, kind='', base=0, show_base=False, roller_radius=0, show_pitch=False, grid=True):
         """
         This will not call ax.legend() because that is not always desired.
 
@@ -176,9 +180,12 @@ class Cam:
         :param show_base: If true, the base circle will be present in the plot
         :param roller_radius: To be used if the pitch curve is desired
         :param show_pitch: If true, the pitch curve will be present in the plot (roller_radius must be given)
+        :param grid: If true, the grid will be added to the axes object
         :return: figure and axes object
         """
         fig, ax = plt.subplots()
+        if grid:
+            ax.grid(zorder=1)
 
         pitch_line = self.naive.cam_plot['pitch_line']
 
@@ -326,7 +333,7 @@ class Cam:
             raise Exception('Unknown kind specified.')
 
     def get_animation(self, kind=None, base=0, inc=10, cushion=0.5, roller_radius=0, face_width=0, length=0, width=0,
-                      eccentricity=0):
+                      eccentricity=0, grid=True):
         """
         :param kind: The motion type to base the animation off of
         :param base: The base radius of the cam
@@ -338,6 +345,7 @@ class Cam:
         :param length: The length of the follower (optional)
         :param width: The width of the follower (optional)
         :param eccentricity: The offset of the follower
+        :param grid: If true, the grid will be added to the axes object
         :return: animation, figure, axes, and follower object
         """
         motion_type = self.get_motion_type(kind)
@@ -345,6 +353,8 @@ class Cam:
         fig, ax = plt.subplots()
         ax.set_aspect('equal')
         ax.set_title(f'{motion_type} Animation')
+        if grid:
+            ax.grid(zorder=1)
 
         if roller_radius:
             follower = RollerFollower(motion_type, base, self.thetas_r, inc, roller_radius=roller_radius, length=length,
@@ -630,12 +640,15 @@ class RollerFollower:
         y_min, y_max = np.amin(self.cam_y), np.amax(self.cam_y)
         return (x_min, x_max), (y_min, y_max)
 
-    def plot(self):
+    def plot(self, grid=True):
         """
         Plots the displacement of the follower alongside the cam displacement
 
+        :param grid: If true, the grid will be added to the axes object
         :return: figure and axes object"""
         fig, ax = plt.subplots()
+        if grid:
+            ax.grid(zorder=1)
         ax.plot(np.rad2deg(self.motion.thetas[self.indexes]), self.S, label='Follower Displacement',
                 **self.motion.cam_plot['default'])
         ax.plot(np.rad2deg(self.motion.thetas), self.motion.S, **self.motion.appearance)
@@ -690,8 +703,10 @@ class FlatFollower:
         y_min, y_max = np.amin(self.cam_y), np.amax(self.cam_y)
         return (x_min, x_max), (y_min, y_max)
 
-    def plot(self):
+    def plot(self, grid=True):
         fig, ax = plt.subplots()
+        if grid:
+            ax.grid(zorder=1)
         ax.plot(np.rad2deg(self.motion.thetas[self.indexes]), self.S, label='Follower Displacement',
                 **self.motion.cam_plot['default'])
         ax.plot(np.rad2deg(self.motion.thetas), self.motion.S, **self.motion.appearance)

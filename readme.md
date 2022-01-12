@@ -241,7 +241,6 @@ This is all that's required to call the following methods.
 
 ```python
 fig1, ax1 = cam.plot(kind='all')
-ax1.grid()
 fig2, ax2 = cam.svaj(kind='cycloidal')
 plt.show()
 ```
@@ -262,7 +261,6 @@ roller_analysis = cam.get_base_circle(kind='cycloidal', follower='roller', rolle
                                       plot=True)
 fig3, ax3 = cam.profile(kind='cycloidal', base=roller_analysis['Rb'], show_base=True, roller_radius=1/2,
                         show_pitch=True)
-ax3.grid()
 plt.show()
 ```
 
@@ -280,7 +278,6 @@ flat_analysis = cam.get_base_circle(kind='cycloidal', follower='flat', desired_m
 print(flat_analysis['Rb'])
 print(flat_analysis['Min Face Width'])
 fig4, ax4 = cam.profile(kind='cycloidal', base=flat_analysis['Rb'], show_base=True)
-ax4.grid()
 plt.show()
 ```
 
@@ -295,9 +292,7 @@ To get the roller animation, call this:
 ```python
 ani, fig5, ax5, follower = cam.get_animation(kind='cycloidal', base=roller_analysis['Rb'], roller_radius=1/2, length=2,
                                              width=3/8, inc=5)
-ax5.grid()
 fig6, ax6 = follower.plot()
-ax6.grid()
 plt.show()
 ```
 
@@ -315,9 +310,7 @@ For the flat faced follower,
 ```python
 ani_flat, fig7, ax7, follower = cam.get_animation(kind='cycloidal', base=flat_analysis['Rb'], face_width=2.75, length=2,
                                                   width=3/8, inc=5)
-ax7.grid()
 fig8, ax8 = follower.plot()
-ax8.grid()
 plt.show()
 ```
 

@@ -18,24 +18,19 @@ cam = Cam(motion=[
 roller_analysis = cam.get_base_circle(kind='cycloidal', follower='roller', roller_radius=1, max_pressure_angle=30,
                                       plot=True)
 fig1, ax1 = cam.profile(kind='cycloidal', base=roller_analysis['Rb'], show_base=True, show_pitch=True, roller_radius=1)
-ax1.grid()
 plt.show()
 
 ani, fig2, ax2, follower = cam.get_animation(kind='cycloidal', base=4, inc=5, roller_radius=1)
-ax2.grid()
 
 # ani.save('../animations/cam1_roller.mp4', dpi=300)
 
 fig3, ax3 = follower.plot()
-ax3.grid()
 plt.show()
 
 ani_, fig4, ax4, follower = cam.get_animation(kind='harmonic', base=4, inc=5, face_width=4)
-ax4.grid()
 plt.show()
 
 # ani_.save('../animations/cam1_flat_face.mp4')
 
 fig5, ax5 = follower.plot()
-ax5.grid()
 plt.show()

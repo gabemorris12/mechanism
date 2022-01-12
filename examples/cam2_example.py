@@ -12,7 +12,6 @@ cam = Cam(motion=[
 # Showing all the plots for each kind of motion
 
 fig1, ax1 = cam.plot(kind='all')
-ax1.grid()
 
 # These return figure and axes objects as well but don't need them.
 cam.svaj(kind='naive')
@@ -30,7 +29,6 @@ ax2.legend()
 plt.show()
 
 ani, fig3, ax3, follower = cam.get_animation(kind='cycloidal', base=2, roller_radius=0.75, width=0.5, length=4, inc=5)
-ax3.grid()
 plt.show()
 
 # ani.save('../animations/cam2.mp4', dpi=300)
