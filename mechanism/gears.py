@@ -158,9 +158,10 @@ class SpurGear:
         self.tooth_profile = np.concatenate((self.involute_points, addendum_circle[1:-1],
                                              np.flip(self.involute_reflection)))
 
-    def plot(self):
+    def plot(self, grid=True):
         """
         Shows a plot of the gear tooth.
+        :param grid: If true, the grid will be added to the axes object
         :return: figure and axes objects
         """
         between_teeth = 2*np.pi/self.N
@@ -177,6 +178,8 @@ class SpurGear:
         dedendum = self.rb*np.exp(1j*dedendum_draw)
 
         fig, ax = plt.subplots()
+        if grid:
+            ax.grid(zorder=1)
         ax.plot(np.real(base), np.imag(base), **SpurGear.gear_appearance['base'])
         ax.plot(np.real(pitch), np.imag(pitch), **SpurGear.gear_appearance['pitch'])
         ax.plot(np.real(self.tooth_profile), np.imag(self.tooth_profile), **SpurGear.gear_appearance['tooth'])
