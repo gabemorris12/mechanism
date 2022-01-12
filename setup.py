@@ -3,7 +3,7 @@ import os
 
 THIS_DIR = r'C:\Users\gmbra\Downloads\Python Programs\mechanism'
 
-VERSION = '1.0.0'
+VERSION = '1.0.1'
 
 CLASSIFIERS = [
     'Development Status :: 5 - Production/Stable',
@@ -20,7 +20,8 @@ setup(
     version=VERSION,
     author='Gabe Morris',
     author_email='gabemorris1231@gmail.com',
-    description='A package that provides a kinematic analysis of mechanisms, cams, and gears.',
+    description='A package that provides a kinematic analysis of mechanisms and cams and custom tooth profile for spur '
+                'gears.',
     long_description=LONG_DESCRIPTION,
     long_description_content_type='text/markdown',
     url='https://github.com/gabemorris12/mechanism',

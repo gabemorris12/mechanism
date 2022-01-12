@@ -84,7 +84,6 @@ table.iterate()
 ani, fig, ax = table.get_animation(cushion=0.25)
 
 ax.set_title('Extendable Table')
-ax.grid()
 
 plt.show()
 

@@ -43,7 +43,6 @@ mechanism.iterate()
 ani, fig, ax = mechanism.get_animation(cushion=0.5)
 
 ax.set_title('Engine')
-ax.grid()
 
 plt.show()
 

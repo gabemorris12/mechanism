@@ -43,7 +43,6 @@ mechanism.iterate()
 ani, fig, ax = mechanism.get_animation()
 
 ax.set_title('Non Grashof Mechanism')
-ax.grid()
 
 plt.show()
 

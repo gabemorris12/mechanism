@@ -35,10 +35,8 @@ mechanism = Mechanism(vectors=(a, b, c, d, e, f, g, h, i, j, k, l), input_vector
 mechanism.calculate()
 mechanism.tables(acceleration=True, velocity=True, position=True)
 fig1, ax1 = mechanism.plot(cushion=2, show_joints=True)
-ax1.grid()
 fig2, ax2 = mechanism.plot(cushion=2, velocity=True, acceleration=True)
 ax2.set_title('Showing Velocity and Acceleration')
-ax2.grid()
 
 O, A, B, C, P = get_joints('O A B C P')
 a = Vector((O, A), r=2)
@@ -62,6 +60,5 @@ mechanism = Mechanism(vectors=(a, c, b, d, e, f), input_vector=a, pos=np.deg2rad
 mechanism.calculate()
 mechanism.tables(position=True)
 fig3, ax3 = mechanism.plot()
-ax3.grid()
 
 plt.show()

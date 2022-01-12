@@ -36,7 +36,6 @@ mechanism.iterate()
 ani, fig, ax = mechanism.get_animation()
 
 ax.set_title('Crank Slider')
-ax.grid()
 
 plt.show()
 

@@ -29,7 +29,6 @@ mechanism.iterate()
 ani, fig, ax = mechanism.get_animation(cushion=1/2)
 
 ax.set_title('Crunode Coupler Curve')
-ax.grid()
 
 plt.show()
 

@@ -34,7 +34,6 @@ mechanism.iterate()
 ani, fig, ax = mechanism.get_animation()
 
 ax.set_title('Four Bar Linkage')
-ax.grid()
 
 plt.show()
 

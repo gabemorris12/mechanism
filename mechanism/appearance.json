@@ -3,23 +3,23 @@
     "default": {
       "marker": "o",
       "color": "maroon",
-      "zorder": 3
+      "zorder": 4
     },
     "ground": {
       "ls": "--",
       "color": "black",
-      "zorder": 2
+      "zorder": 3
     },
     "dotted": {
       "ls": ":",
       "color": "black",
-      "zorder": 2
+      "zorder": 3
     }
   },
   "joint_path": {
     "default": {
       "color": "deepskyblue",
-      "zorder": 1
+      "zorder": 2
     }
   },
   "cam_plot": {

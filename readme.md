@@ -162,7 +162,6 @@ call `mechanism.calculate()` then call `mechanism.plot()` (see `plot_at_instant.
 # Call mechanism.iterate() then get and show the animation
 mechanism.iterate()
 ani, fig_, ax_ = mechanism.get_animation()
-ax_.grid()
 
 # Plot the angles, angular velocity, and angular acceleration of vector d
 fig, ax = plt.subplots(nrows=3, ncols=1)

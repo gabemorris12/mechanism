@@ -460,17 +460,21 @@ class Mechanism:
             print('')
             Data(joint_data, headers=['Joint', 'Mag', 'Angle', 'x', 'y']).print(table=True)
 
-    def plot(self, velocity=False, acceleration=False, show_joints=True, cushion=1):
+    def plot(self, velocity=False, acceleration=False, show_joints=True, grid=True, cushion=1):
         """
         Plots the instance of the mechanism; calculate() method must be called before calling this method.
 
         :param velocity: bool; Plots velocity vectors if True
         :param acceleration: bool; Plots acceleration vectors if True
         :param show_joints: Adds joint labels to the plot (only if velocity=False and acceleration=False)
+        :param grid: bool; Add the grid if true.
         :param cushion: int, float; The thickness of the cushion around the plot.
         """
         fig, ax = plt.subplots()
         ax.set_aspect('equal')
+
+        if grid:
+            ax.grid(zorder=1)
 
         y_values = [j.y_pos for j in self.joints]
         x_values = [j.x_pos for j in self.joints]
@@ -620,15 +624,19 @@ class Mechanism:
 
         return (x_min, x_max), (y_min, y_max)
 
-    def get_animation(self, cushion=1):
+    def get_animation(self, grid=True, cushion=1):
         # Todo: A step value could be added here to adjust speed
         """
         :param: cushion: int; Add a cushion around the plot.
+        :param: grid: bool; Add the grid if true.
         :return: An animation, figure, and axes object.
         """
         fig, ax = plt.subplots()
         ax.set_aspect('equal')
         x_limits, y_limits = self.get_bounds()
+
+        if grid:
+            ax.grid(zorder=1)
 
         ax.set_xlim(x_limits[0] - cushion, x_limits[1] + cushion)
         ax.set_ylim(y_limits[0] - cushion, y_limits[1] + cushion)
