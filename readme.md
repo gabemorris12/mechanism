@@ -12,9 +12,9 @@ second, dwell for 1.5 seconds, fall 2 inches in 3 seconds). As of right now, the
 naive/uniform motion (how the cam shouldn't be designed), harmonic motion, and cycloidal motion. It is possible that
 this gets updated in the future with better options such as modified sinusoidal motion.
 
-For gears, this package is capable of providing the coordinates of a spur gear tooth profile given a set of
-properties. The analysis is based on the diametral pitch, number of teeth, and pitch diameter if desired over the number
-of teeth. An argument for AGMA standards may be set to `True` if desired.
+For gears, this package is capable of providing the coordinates of a spur gear tooth profile given a set of properties.
+The analysis is based on the diametral pitch, number of teeth, and pitch diameter if desired over the number of teeth.
+An argument for AGMA standards may be set to `True` if desired.
 
 Install this package via pip: `pip install mechanism`.
 
@@ -117,8 +117,8 @@ d = Vector((C, B), r=9)
 Always define the vectors in the polar form. The first argument is the joints, and the first joint is the tail of the
 vector, and the second is the head. Additionally, extra keyword arguments will be passed to plt.plot() for styling.
 There should be half as many loop equations as there are unknown. The input vector "a" does not need to have its known
-values at its declaration. The next thing to do is to define the known input and guesses for the first iteration of the
-unknown values.
+values at its declaration. Instead, it's values will be accounted for in the loop equation. The next thing to do is to
+define the known input and guesses for the first iteration of the unknown values.
 
 ```python
 # Define the known input to the system.
@@ -146,7 +146,7 @@ def loop(x, i):
 
 
 # Create the mechanism object
-mechanism = Mechanism(vectors=(a, b, c, d), input_vector=a, loops=loop, pos=theta, vel=omega, acc=alpha,
+mechanism = Mechanism(vectors=(a, b, c, d), origin=O, loops=loop, pos=theta, vel=omega, acc=alpha,
                       guess=(pos_guess, vel_guess, acc_guess))
 ```
 

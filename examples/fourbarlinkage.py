@@ -27,7 +27,7 @@ def loops(x, inp):
 
 t2 = np.linspace(0, 6*np.pi, 300)
 guess = np.concatenate((np.deg2rad([50, 120]), np.array([5]), np.deg2rad([50])))
-mechanism = Mechanism(vectors=(a, b, c, d, e, f), input_vector=a, pos=t2, guess=(guess, ),
+mechanism = Mechanism(vectors=(a, b, c, d, e, f), origin=O, pos=t2, guess=(guess, ),
                       loops=loops)
 
 mechanism.iterate()

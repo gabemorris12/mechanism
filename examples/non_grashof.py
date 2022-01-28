@@ -36,7 +36,7 @@ thetas_reversed = np.flip(thetas)[1:]
 thetas = np.concatenate((thetas, thetas_reversed))
 omegas = -30*np.ones(thetas.size)
 alphas = np.zeros(thetas.size)
-mechanism = Mechanism(vectors=(a, b, c, d, e, f, g, h, i, j, k, l), input_vector=a, loops=loops,
+mechanism = Mechanism(vectors=(a, b, c, d, e, f, g, h, i, j, k, l), origin=O4, loops=loops,
                       pos=thetas, vel=omegas, acc=alphas, guess=(guess1, guess2, guess3))
 
 mechanism.iterate()

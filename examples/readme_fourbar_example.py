@@ -32,7 +32,7 @@ def loop(x, i):
 
 
 # Create the mechanism object
-mechanism = Mechanism(vectors=(a, b, c, d), input_vector=a, loops=loop, pos=theta, vel=omega, acc=alpha,
+mechanism = Mechanism(vectors=(a, b, c, d), origin=O, loops=loop, pos=theta, vel=omega, acc=alpha,
                       guess=(pos_guess, vel_guess, acc_guess))
 
 # Call mechanism.iterate() then get and show the animation

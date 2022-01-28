@@ -37,7 +37,7 @@ t2_t = -50*np.pi*time
 w2_t = -50*np.pi*np.ones(250)
 a2_t = np.zeros(250)
 
-mechanism = Mechanism(vectors=(a, b, c, d, e, x, y), input_vector=a, guess=(guess1, guess2, guess3), pos=t2_t,
+mechanism = Mechanism(vectors=(a, b, c, d, e, x, y), origin=O, guess=(guess1, guess2, guess3), pos=t2_t,
                       vel=w2_t, acc=a2_t, loops=loops)
 mechanism.iterate()
 ani, fig, ax = mechanism.get_animation(cushion=0.5)

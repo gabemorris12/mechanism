@@ -29,7 +29,7 @@ def loops(x, inp):
     return temp.flatten()
 
 
-mechanism = Mechanism(vectors=(a, b, c, d, e, f, g, h, i, j, k, l), input_vector=a, loops=loops,
+mechanism = Mechanism(vectors=(a, b, c, d, e, f, g, h, i, j, k, l), origin=O4, loops=loops,
                       pos=np.deg2rad(52.92024014972946), vel=-30, acc=0, guess=(guess1, guess2, guess3))
 
 mechanism.calculate()
@@ -55,7 +55,7 @@ def loops(x, i_):
 
 
 guess1 = np.concatenate((np.deg2rad([20, 60]), np.array([4]), np.deg2rad([48])))
-mechanism = Mechanism(vectors=(a, c, b, d, e, f), input_vector=a, pos=np.deg2rad(45), guess=(guess1, ),
+mechanism = Mechanism(vectors=(a, c, b, d, e, f), origin=O, pos=np.deg2rad(45), guess=(guess1, ),
                       loops=loops)
 mechanism.calculate()
 mechanism.tables(position=True)

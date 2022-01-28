@@ -185,13 +185,11 @@ class Joint:
 
 
 class Mechanism:
-    def __init__(self, vectors=None, input_vector=None, loops=None, pos=None, vel=None, acc=None,
-                 guess=None):
+    def __init__(self, vectors=None, origin=None, loops=None, pos=None, vel=None, acc=None, guess=None):
         """
         :param vectors: tup, list; A list or tuple of vector objects.
-        :param input_vector: Vector; A vector object in which pos, vel, and acc data gets past to in the loop
-            equation. The joint at the tail of the Vector object is taken to be the origin for all the data in joints.
-            This vector is typically the crank of the mechanism.
+        :param origin: Joint; The joint object to be taken as the origin. This will be assumed to be fixed and forces
+                       a fixed frame of reference.
         :param loops: func; This is a function of loop equations of that returns a flattened ndarray. This function is
             used in fsolve. See examples for how these loop equations are structured.
         :param pos: int, float, ndarray; Value(s) of pos for the input vector. This gets past as a second argument
@@ -211,7 +209,7 @@ class Mechanism:
         velocities: A list of Velocity objects.
         accelerations: A list of Acceleration objects.
         """
-        self.vectors, self.input_vector = vectors, input_vector
+        self.vectors, self.origin = vectors, origin
         joints = set()
         for v in vectors:
             joints.update(v.joints)
@@ -232,7 +230,7 @@ class Mechanism:
         self.dic = {v: v for v in self.vectors}
 
         assert self.vectors, 'Vector argument not defined.'
-        assert self.input_vector, 'Input vector argument not defined.'
+        assert self.origin, 'Input vector argument not defined.'
         assert self.loops, 'Loops argument not defined.'
         assert self.pos is not None, "pos argument must be defined."
 
@@ -254,7 +252,7 @@ class Mechanism:
         Fixes the positions of all the joints assuming that all vectors are defined locally, meaning that each vector's
         length, angle, r_dot, omega, r_ddot, and alpha are known.
         """
-        origin = self.input_vector.joints[0]
+        origin = self.origin
         origin.fix_position(0, 0)
 
         attached_to_origin = []
@@ -292,7 +290,7 @@ class Mechanism:
         Fixes the velocity of all the joints assuming that all vectors are defined locally, meaning that each vector's
         length, angle, r_dot, omega, r_ddot, and alpha are known.
         """
-        origin = self.input_vector.joints[0]
+        origin = self.origin
         origin.fix_velocity(0, 0)
 
         attached_to_origin = []
@@ -330,7 +328,7 @@ class Mechanism:
         Fixes the accelerations of all the joints assuming that all vectors are defined locally, meaning that the
         vector's length, angle, r_dot, omega, r_ddot, and alpha are known.
         """
-        origin = self.input_vector.joints[0]
+        origin = self.origin
         origin.fix_acceleration(0, 0)
 
         attached_to_origin = []

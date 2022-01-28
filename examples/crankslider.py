@@ -31,7 +31,7 @@ guess = np.concatenate((np.deg2rad([180, 30, 120, 150]), np.array([5, 5])))
 # mechanism.plot()
 
 t2 = np.linspace(0, 6*np.pi, 300)
-mechanism = Mechanism(vectors=(a, b, c, d, e, f, x, y), input_vector=a, loops=loops, pos=t2, guess=(guess, ))
+mechanism = Mechanism(vectors=(a, b, c, d, e, f, x, y), origin=O2, loops=loops, pos=t2, guess=(guess, ))
 mechanism.iterate()
 ani, fig, ax = mechanism.get_animation()
 

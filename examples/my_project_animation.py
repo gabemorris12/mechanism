@@ -78,7 +78,7 @@ vel_guess = [-0.019607843137219604, 0.043045555138092384, -0.05555555555555556, 
 acc_guess = [0.00029789311514143526, -0.0017432963189026164, -2.213891507590676e-25, -0.0017432963189026164,
              0.043045555138092384, 0.043045555138092384, 0.043045555138092384, 0.043045555138092384]
 
-table = Mechanism(vectors=[eval(f'v{i}') for i in range(1, 15)], input_vector=v1, loops=loops, pos=v1_pos,
+table = Mechanism(vectors=[eval(f'v{i}') for i in range(1, 15)], origin=O, loops=loops, pos=v1_pos,
                   vel=v1_vel, acc=v1_acc, guess=[pos_guess, vel_guess, acc_guess])
 table.iterate()
 ani, fig, ax = table.get_animation(cushion=0.25)

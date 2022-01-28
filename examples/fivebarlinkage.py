@@ -21,7 +21,7 @@ def loops(x, i):
     return a(i[0]) + b(i[1]) + c(x[0]) - d(x[1]) - e()
 
 
-mechanism = Mechanism(vectors=(a, b, c, d, e), input_vector=a, guess=(guess,), pos=np.stack((theta_a, theta_b), axis=1),
+mechanism = Mechanism(vectors=(a, b, c, d, e), origin=O, guess=(guess,), pos=np.stack((theta_a, theta_b), axis=1),
                       loops=loops)
 mechanism.iterate()
 ani, fig, ax = mechanism.get_animation()
