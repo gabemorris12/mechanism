@@ -15,7 +15,7 @@ class SpurGear:
 
     gear_appearance = appearance['gear_plot']
 
-    def __init__(self, N=0, pd=0, d=0, pressure_angle=20, agma=False, a=0, b=0, backlash=0, ignore_warning=False,
+    def __init__(self, N=0, pd=0, d=0, pressure_angle=20, agma=False, a=0, b=0, backlash=0, ignore_undercut=False,
                  size=1000):
         """
         In order to fully define the gear,
@@ -40,6 +40,8 @@ class SpurGear:
                          and the tooth thickness are arc length measurements along the pitch circle. If backlash is not
                          specified and agma is set to true, the backlash will give a non-conservative estimate for the
                          backlash. Backlash, however, can be specified and agma set to true.
+        :param ignore_undercut: If true, the undercut warning will be ignored. This occurs when the dedendum is large
+                                enough to extend passed the base circle.
         :param size: The size of one involute curve; make this smaller in some cases if SolidWorks says that the points
                      are too close. Default value is 1000.
 
@@ -115,10 +117,10 @@ class SpurGear:
 
         self.ra, self.rb = self.r + self.a, self.r - self.b
 
-        if self.rb < self.r_base and not ignore_warning:
+        if self.rb < self.r_base and not ignore_undercut:
             warnings.warn('The dedendum circle radius is less than the base circle radius. Undercutting will occur. To '
                           'fix this, make the gear bigger by increasing the pitch diameter or number of teeth. To '
-                          'ignore this warning, pass "ignore=True" at the declaration of the gear object.',
+                          'ignore this warning, pass "ignore_undercut=True" at the declaration of the gear object.',
                           RuntimeWarning)
 
         if self.rb >= self.r_base:
