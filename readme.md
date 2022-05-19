@@ -44,6 +44,10 @@ Install this package via pip: `pip install mechanism`.
 
 ![image not found](https://github.com/gabemorris12/mechanism/raw/master/images/non_grashof.gif)
 
+`offset_crankslider.py`
+
+![image not found](https://github.com/gabemorris12/mechanism/raw/master/images/offset_crankslider.gif)
+
 `cam2_example.py`
 
 ![image not found](https://github.com/gabemorris12/mechanism/raw/master/images/cam2.gif)
