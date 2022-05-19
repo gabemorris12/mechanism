@@ -20,6 +20,7 @@ class VectorBase:
         :param style: str; Applies a certain style passed to plt.plot().
             Options: 
                 ground - a dashed black line for grounded link
+                dotted - a black dotted line
         :param kwargs: Extra arguments that are passed to plt.plot(). If not specified, the line will be maroon with a
             marker style = 'o'
 
