@@ -236,10 +236,10 @@ class Mechanism:
 
         if isinstance(self.pos, np.ndarray):
             for v in self.vectors:
-                v.zero(self.pos.size)
+                v.zero(self.pos.shape[0])
 
             for j in self.joints:
-                j.zero(self.pos.size)
+                j.zero(self.pos.shape[0])
 
             if isinstance(self.vel, np.ndarray):
                 assert self.pos.size == self.vel.size, "vel input size does not match pos input size."
@@ -499,7 +499,7 @@ class Mechanism:
                 ax.quiver(j.x_pos, j.y_pos, j.x_acc, j.y_acc, angles='xy', scale_units='xy', color='orange', zorder=3)
 
             if not velocity and not acceleration and show_joints:
-                ax.annotate(j.name, (j.x_pos, j.y_pos), size='large')
+                ax.annotate(j.name, (j.x_pos, j.y_pos), size='large', zorder=5)
 
         return fig, ax
 
