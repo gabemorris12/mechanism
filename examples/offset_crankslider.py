@@ -1,3 +1,4 @@
+# Performs an analysis on an offset crank slider
 from mechanism import *
 import numpy as np
 import matplotlib.pyplot as plt
@@ -50,12 +51,30 @@ ax.set_title('Offset Crank Slider')
 # Plot the velocity of point B
 # Access the velocity of point B through r_dot of vector d. This will show the magnitude as well as the direction. The
 # velocity may also be accessed through the joint object, B.x_velocities.
-fig2, ax2 = plt.subplots()
-ax2.plot(t, d.vel.r_dots, color='maroon', label=r'$\dot{R}_d$')
-ax2.set_title('Velocity of Joint B')
-ax2.set_xlabel('Time (min)')
-ax2.set_ylabel(r'Velocity ($\frac{in}{min}$)')
-ax2.legend()
-ax2.grid()
+
+# The acceleration and position may be accessed like so:
+# slider_pos = d.pos.rs or B.x_positions
+# slider_acc = d.pos.r_ddots or B.x_accelerations
+
+# Plotting the slider position, velocity, and acceleration
+fig2, ax2 = plt.subplots(nrows=3, ncols=1)
+ax2[0].set_title('Slider Analysis')
+fig2.set_size_inches(8, 7.5)
+
+# Position
+ax2[0].plot(t, B.x_positions, color='maroon')
+ax2[0].set_ylabel('Position ($in$)')
+ax2[0].grid()
+
+# Velocity
+ax2[1].plot(t, d.vel.r_dots, color='maroon')
+ax2[1].set_ylabel(r'Velocity ($\frac{in}{min}$)')
+ax2[1].grid()
+
+# Acceleration
+ax2[2].plot(t, B.x_accelerations, color='maroon')
+ax2[2].set_ylabel(r'Acceleration ($\frac{in}{min^2}$)')
+ax2[2].grid()
+ax2[2].set_xlabel('Time ($min$)')
 
 plt.show()
