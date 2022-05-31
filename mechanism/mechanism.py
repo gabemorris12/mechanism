@@ -402,12 +402,14 @@ class Mechanism:
             print('--------\n')
             if not to_five:
                 mechanism_data = [[v, v.r, np.rad2deg(v.theta), v.x, v.y] for v in self.positions]
+                joint_data = [[j, j.x_pos, j.y_pos] for j in sorted(self.joints, key=lambda x: x.name)]
             else:
                 mechanism_data = [[v, f'{v.r:.5f}', f'{np.rad2deg(v.theta):.5f}', f'{v.x:.5f}', f'{v.y:.5f}'] for v
                                   in self.positions]
+                joint_data = [[j, f'{j.x_pos:.5f}', f'{j.y_pos:.5f}'] for j in
+                              sorted(self.joints, key=lambda x: x.name)]
             Data(mechanism_data, headers=['Vector', 'R', 'Theta', 'x', 'y']).print(table=True)
             print('')
-            joint_data = [[j, j.x_pos, j.y_pos] for j in sorted(self.joints, key=lambda x: x.name)]
             Data(joint_data, headers=['Joint', 'x', 'y']).print(table=True)
             print('')
 
