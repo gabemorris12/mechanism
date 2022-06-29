@@ -86,7 +86,7 @@ class Cam:
         assert all([m[0].lower() in ('dwell', 'rise', 'fall') for m in
                     self.motion]), 'Only "rise", "fall", and "dwell" are acceptable descriptions.'
 
-        self.conditions = self.get_conditions(self.thetas)
+        self.conditions = self._get_conditions(self.thetas)
 
         if not self.omega:
             self.naive = Naive(self.motion, self.shifts, self.intervals, self.conditions, self.thetas)
@@ -111,7 +111,7 @@ class Cam:
         else:
             self.thetas_r = self.thetas
 
-    def get_conditions(self, t):
+    def _get_conditions(self, t):
         """ Returns a list of conditional arrays"""
         # t is short for theta
         conditions = [np.logical_and(t >= 0, t < self.shifts[0])]
@@ -136,7 +136,7 @@ class Cam:
             ax.legend()
             ax.set_title('All Motion Types')
         else:
-            motion_type = self.get_motion_type(kind)
+            motion_type = self._get_motion_type(kind)
             ax.plot(self.thetas_d, motion_type.S, **self.default)
             ax.set_title(f'{motion_type} Motion')
 
@@ -154,7 +154,7 @@ class Cam:
         assert self.omega is not None, Exception(
             'You must include omega input in order to know velocity, acceleration, and jerk.')
 
-        motion_type = self.get_motion_type(kind)
+        motion_type = self._get_motion_type(kind)
         ax[0].set_title(f'{motion_type} Motion')
         ax[0].plot(self.thetas_d, motion_type.S, **self.default)
         ax[1].plot(self.thetas_d, motion_type.V, **self.default)
@@ -195,7 +195,7 @@ class Cam:
                 x, y = obj.get_profile(base, self.thetas_r)
                 ax.plot(x, y, **obj.appearance)
         else:
-            motion_type = self.get_motion_type(kind)
+            motion_type = self._get_motion_type(kind)
             ax.set_title(f'{motion_type} Motion Profile')
             x, y = motion_type.get_profile(base, self.thetas_r)
             ax.fill(x, y, **motion_type.cam_plot['fill'])
@@ -234,7 +234,7 @@ class Cam:
         assert self.omega is not None, Exception(
             'The angular velocity of the cam must be known to conduct this analysis')
 
-        motion_type = self.get_motion_type(kind)
+        motion_type = self._get_motion_type(kind)
         y = motion_type.S
         y_ = motion_type.V/self.omega
         y__ = motion_type.A/self.omega**2
@@ -306,7 +306,7 @@ class Cam:
         :param solidworks: If true, the file structure will be acceptable by solidworks standards. Use a .txt file
                            extension for solidworks to be able to select the file.
         """
-        motion_type = self.get_motion_type(kind)
+        motion_type = self._get_motion_type(kind)
 
         x_coords, y_coords = motion_type.get_profile(base, self.thetas_r)
 
@@ -321,7 +321,7 @@ class Cam:
                 for x, y in zip(x_coords, y_coords):
                     writer.writerow([x, y])
 
-    def get_motion_type(self, kind):
+    def _get_motion_type(self, kind):
         """Returns the motion object specified by 'kind'"""
         if kind == 'naive':
             return self.naive
@@ -348,7 +348,7 @@ class Cam:
         :param grid: If true, the grid will be added to the axes object
         :return: animation, figure, axes, and follower object
         """
-        motion_type = self.get_motion_type(kind)
+        motion_type = self._get_motion_type(kind)
 
         fig, ax = plt.subplots()
         ax.set_aspect('equal')
@@ -425,17 +425,17 @@ class Motion:
         self.thetas = thetas
         self.omega = omega
 
-        self.S = np.piecewise(self.thetas, condlist=self.conditions, funclist=self.get_functions(self.f))
+        self.S = np.piecewise(self.thetas, condlist=self.conditions, funclist=self._get_functions(self.f))
         self.V, self.A, self.J = None, None, None
         if self.omega is not None:
-            self.get_rates()
+            self._get_rates()
 
         with open(APPEARANCE, 'r') as f:
             appearance = json.load(f)
 
         self.cam_plot = appearance['cam_plot']
 
-    def get_functions(self, func_maker, rate=False):
+    def _get_functions(self, func_maker, rate=False):
         """
         :param func_maker: A function that returns a lambda expression
         :param rate: If true, then dwells will be zero
@@ -445,7 +445,7 @@ class Motion:
         start = self.motion[0]
         if start[0].lower() == 'dwell':
             h1, h2 = 0, 0
-            functions = [dwell_maker(h1)]
+            functions = [_dwell_maker(h1)]
         else:
             h1, h2 = 0, start[1]
             functions = [func_maker(h1, h2, self.intervals[0], 0)]
@@ -456,23 +456,23 @@ class Motion:
         for i in range(1, self.shifts.size):
             motion = self.motion[i]
             if motion[0].lower() == 'dwell' and not rate:
-                functions.append(dwell_maker(h1))
+                functions.append(_dwell_maker(h1))
             elif motion[0].lower() == 'dwell' and rate:
-                functions.append(dwell_maker(0))
+                functions.append(_dwell_maker(0))
             else:
                 h2 = motion[1] if motion[0].lower() == 'rise' else -motion[1]
                 functions.append(func_maker(h1, h2, self.intervals[i], self.shifts[i - 1]))
                 h1 += h2
         return functions
 
-    def get_rates(self):
+    def _get_rates(self):
         """Gets the rates of velocity, acceleration, and jerk of the cam"""
         self.V = np.piecewise(self.thetas, condlist=self.conditions,
-                              funclist=self.get_functions(self.f_, rate=True))*self.omega
+                              funclist=self._get_functions(self.f_, rate=True))*self.omega
         self.A = np.piecewise(self.thetas, condlist=self.conditions,
-                              funclist=self.get_functions(self.f__, rate=True))*self.omega**2
+                              funclist=self._get_functions(self.f__, rate=True))*self.omega**2
         self.J = np.piecewise(self.thetas, condlist=self.conditions,
-                              funclist=self.get_functions(self.f___, rate=True))*self.omega**3
+                              funclist=self._get_functions(self.f___, rate=True))*self.omega**3
 
     def get_profile(self, base, thetas):
         """
@@ -616,7 +616,7 @@ class RollerFollower:
             cam_profile = motion.get_profile(base, thetas + i*h)
             self.cam_x.append(cam_profile[0])
             self.cam_y.append(cam_profile[1])
-            roller_center = move_circle(cam_profile, roller_radius, start_point)
+            roller_center = _move_circle(cam_profile, roller_radius, start_point)
             self.roller_centers.append(roller_center)
             self.roller_x.append(circle_x + roller_center)
             self.roller_y.append(circle_y + eccentricity)
@@ -718,11 +718,11 @@ class FlatFollower:
         return fig, ax
 
 
-def dwell_maker(h):
+def _dwell_maker(h):
     return lambda theta: h
 
 
-def move_circle(cam_profile, r, start_point):
+def _move_circle(cam_profile, r, start_point):
     """
     This function is responsible for keeping the roller tangent to the surface of the cam within a 1/1000th unit
     tolerance.

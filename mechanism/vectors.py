@@ -59,59 +59,59 @@ class VectorBase:
         if self.r is not None and self.theta is not None:
             self.r_dot, self.omega = 0, 0
             self.r_ddot, self.alpha = 0, 0
-            self.get = self.neither
+            self.get = self._neither
         elif self.r is not None and self.theta is None:
             self.r_dot, self.omega = 0, None
             self.r_ddot, self.alpha = 0, None
-            self.get = self.tangent
+            self.get = self._tangent
         elif self.r is None and self.theta is not None:
             self.r_dot, self.omega = None, 0
             self.r_ddot, self.alpha = None, 0
-            self.get = self.slip
+            self.get = self._slip
         else:
             self.r_dot, self.omega = None, None
             self.r_ddot, self.alpha = None, None
-            self.get = self.both
+            self.get = self._both
 
-    def neither(self):
+    def _neither(self):
         pass
 
-    def both(self, _, __):
+    def _both(self, _, __):
         pass
 
-    def slip(self, _):
+    def _slip(self, _):
         pass
 
-    def tangent(self, _):
+    def _tangent(self, _):
         pass
 
-    def fix_global_position(self):
+    def _fix_global_position(self):
         """
         Fixes the position of the head joint by making its position the x and y components of the current instance.
         """
-        self.joints[1].fix_position(self.x, self.y)
+        self.joints[1]._fix_position(self.x, self.y)
 
-    def fix_global_velocity(self):
+    def _fix_global_velocity(self):
         """
         Fixes the velocity of the head joint by making its velocity the x and y components of the current instance.
         """
-        self.joints[1].fix_velocity(self.x, self.y)
+        self.joints[1]._fix_velocity(self.x, self.y)
 
-    def fix_global_acceleration(self):
+    def _fix_global_acceleration(self):
         """
         Fixes the acceleration of the head joint by making its acceleration the x and y components of the current
         instance.
         """
-        self.joints[1].fix_acceleration(self.x, self.y)
+        self.joints[1]._fix_acceleration(self.x, self.y)
 
-    def reverse(self):
+    def _reverse(self):
         """
         :return: A VectorBase object that is reversed. The joints get reversed as well as the x and y components.
         """
         x, y = -self.x, -self.y
         return VectorBase(joints=(self.joints[1], self.joints[0]), x=x, y=y)
 
-    def get_mag(self):
+    def _get_mag(self):
         """
         :return: A tuple consisting of the magnitude of the current instance and the angle.
         """
@@ -157,14 +157,14 @@ class Vector:
         self.get = self.pos.get
         self.joints = joints
 
-    def update_velocity(self):
+    def _update_velocity(self):
         """
         Updates the velocity object to include the length, r, and the angle ,theta.
         """
         self.vel.r = self.pos.r
         self.vel.theta = self.pos.theta
 
-    def update_acceleration(self):
+    def _update_acceleration(self):
         """
         Updates the acceleration object to include r, theta, r_dot, and omega.
         """
@@ -173,7 +173,7 @@ class Vector:
         self.acc.r_dot = self.vel.r_dot
         self.acc.omega = self.vel.omega
 
-    def zero(self, s):
+    def _zero(self, s):
         """
         Zeros all the ndarray attributes at a certain size, s.
 
@@ -192,7 +192,7 @@ class Vector:
         self.acc.r_ddots = np.zeros(s)
         self.acc.alphas = np.zeros(s)
 
-    def set_position_data(self, i):
+    def _set_position_data(self, i):
         """
         Sets position data at index, i.
 
@@ -201,7 +201,7 @@ class Vector:
         self.pos.rs[i] = self.pos.r
         self.pos.thetas[i] = self.pos.theta
 
-    def set_velocity_data(self, i):
+    def _set_velocity_data(self, i):
         """
         Sets velocity data at index, i.
 
@@ -210,7 +210,7 @@ class Vector:
         self.vel.r_dots[i] = self.vel.r_dot
         self.vel.omegas[i] = self.vel.omega
 
-    def set_acceleration_data(self, i):
+    def _set_acceleration_data(self, i):
         """
         Sets acceleration data at index, i.
 
@@ -231,23 +231,23 @@ class Position(VectorBase):
         VectorBase.__init__(self, **kwargs)
         del self.r_dot, self.r_ddot, self.omega, self.alpha, self.r_dots, self.omegas, self.r_ddots, self.alphas
 
-    def both(self, r, theta):
+    def _both(self, r, theta):
         # When both the theta and the radius are unknown
         self.x, self.y = r*np.cos(theta), r*np.sin(theta)
         self.r, self.theta = r, theta
         return np.array([self.x, self.y])
 
-    def neither(self):
+    def _neither(self):
         self.x, self.y = self.r*np.cos(self.theta), self.r*np.sin(self.theta)
         return np.array([self.x, self.y])
 
-    def tangent(self, theta):
+    def _tangent(self, theta):
         # When the theta is unknown
         self.x, self.y = self.r*np.cos(theta), self.r*np.sin(theta)
         self.theta = theta
         return np.array([self.x, self.y])
 
-    def slip(self, r):
+    def _slip(self, r):
         # When the radius is unknown
         self.x, self.y = r*np.cos(self.theta), r*np.sin(self.theta)
         self.r = r
@@ -265,22 +265,22 @@ class Velocity(VectorBase):
         VectorBase.__init__(self, **kwargs)
         del self.r_ddot, self.alpha, self.r_ddots, self.alphas
 
-    def neither(self):
+    def _neither(self):
         self.x, self.y = 0, 0
         return np.array([self.x, self.y])
 
-    def both(self, r_dot, omega):
+    def _both(self, r_dot, omega):
         self.x, self.y = (r_dot*np.cos(self.theta) - self.r*omega*np.sin(self.theta),
                           r_dot*np.sin(self.theta) + self.r*omega*np.cos(self.theta))
         self.r_dot, self.omega = r_dot, omega
         return np.array([self.x, self.y])
 
-    def tangent(self, omega):
+    def _tangent(self, omega):
         self.x, self.y = self.r*omega*-np.sin(self.theta), self.r*omega*np.cos(self.theta)
         self.omega = omega
         return np.array([self.x, self.y])
 
-    def slip(self, r_dot):
+    def _slip(self, r_dot):
         self.x, self.y = r_dot*np.cos(self.theta), r_dot*np.sin(self.theta)
         self.r_dot = r_dot
         return np.array([self.x, self.y])
@@ -296,11 +296,11 @@ class Acceleration(VectorBase):
     def __init__(self, **kwargs):
         VectorBase.__init__(self, **kwargs)
 
-    def neither(self):
+    def _neither(self):
         self.x, self.y = 0, 0
         return np.array([self.x, self.y])
 
-    def both(self, r_ddot, alpha):
+    def _both(self, r_ddot, alpha):
         self.x, self.y = (r_ddot*np.cos(self.theta) - 2*self.r_dot*self.omega*np.sin(self.theta) - self.r*alpha*np.sin(
             self.theta) - self.r*self.omega ** 2*np.cos(self.theta),
                           r_ddot*np.sin(self.theta) + 2*self.r_dot*self.omega*np.cos(self.theta) + self.r*alpha*np.cos(
@@ -308,13 +308,13 @@ class Acceleration(VectorBase):
         self.r_ddot, self.alpha = r_ddot, alpha
         return np.array([self.x, self.y])
 
-    def tangent(self, alpha):
+    def _tangent(self, alpha):
         self.x, self.y = (self.r*alpha*-np.sin(self.theta) - self.r*self.omega**2*np.cos(self.theta),
                           self.r*alpha*np.cos(self.theta) - self.r*self.omega**2*np.sin(self.theta))
         self.alpha = alpha
         return np.array([self.x, self.y])
 
-    def slip(self, r_ddot):
+    def _slip(self, r_ddot):
         self.x, self.y = r_ddot*np.cos(self.theta), r_ddot*np.sin(self.theta)
         self.r_ddot = r_ddot
         return np.array([self.x, self.y])

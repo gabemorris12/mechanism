@@ -150,7 +150,7 @@ class SpurGear:
         involute_points = np.insert(involute_points, 0, self.rb + 0j) if self.rb < self.r_base else involute_points
 
         # Rotate the involute curve and get the reflection/addendum circle
-        self.involute_points = rotate(involute_points, rotation)
+        self.involute_points = _rotate(involute_points, rotation)
         self.involute_reflection = -1*np.real(self.involute_points) + 1j*np.imag(self.involute_points)
         addendum_start = np.angle(self.involute_points[-1])
         addendum_end = np.angle(self.involute_reflection[-1])
@@ -231,7 +231,7 @@ class SpurGear:
         Data(info, headers=['Property', 'Value']).print(table=True)
 
 
-def rotate(coords, rotation):
+def _rotate(coords, rotation):
     """
     Rotates a set of complex coordinates.
 

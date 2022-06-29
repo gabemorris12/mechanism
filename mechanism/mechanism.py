@@ -62,31 +62,31 @@ class Joint:
         else:
             self.kwargs = appearance['joint_path']['default']
 
-    def position_is_fixed(self):
+    def _position_is_fixed(self):
         """
         :return: True if the position is globally defined.
         """
         return False if self.x_pos is None or self.y_pos is None else True
 
-    def velocity_is_fixed(self):
+    def _velocity_is_fixed(self):
         """
         :return: True if the velocity is globally defined.
         """
         return False if self.x_vel is None or self.y_vel is None else True
 
-    def acceleration_is_fixed(self):
+    def _acceleration_is_fixed(self):
         """
         :return: True if the acceleration is globally defined.
         """
         return False if self.x_acc is None or self.y_acc is None else True
 
-    def fix_position(self, x_pos, y_pos):
+    def _fix_position(self, x_pos, y_pos):
         """
         Sets self.x_pos and self.y_pos
         """
         self.x_pos, self.y_pos = x_pos, y_pos
 
-    def fix_velocity(self, x_vel, y_vel):
+    def _fix_velocity(self, x_vel, y_vel):
         """
         Sets self.x_vel and self.y_vel
         """
@@ -96,7 +96,7 @@ class Joint:
         if abs(self.y_vel) < 1e-10:
             self.y_vel = 0
 
-    def fix_acceleration(self, x_acc, y_acc):
+    def _fix_acceleration(self, x_acc, y_acc):
         """
         Sets self.x_acc and self.y_acc
         """
@@ -106,7 +106,7 @@ class Joint:
         if abs(self.y_acc) < 1e-10:
             self.y_acc = 0
 
-    def clear(self):
+    def _clear(self):
         """
         Clears the non-iterable instance variables. This must be called between two different calls of calculate() from
         the mechanism instance.
@@ -119,15 +119,15 @@ class Joint:
         """
         :return: A tuple of the magnitude and angle of the velocity of the joint.
         """
-        return VectorBase(x=self.x_vel, y=self.y_vel).get_mag()
+        return VectorBase(x=self.x_vel, y=self.y_vel)._get_mag()
 
-    def acc_mag(self):
+    def _acc_mag(self):
         """
         :return: A tuple of the magnitude and angle of the acceleration of the joint.
         """
-        return VectorBase(x=self.x_acc, y=self.y_acc).get_mag()
+        return VectorBase(x=self.x_acc, y=self.y_acc)._get_mag()
 
-    def zero(self, s):
+    def _zero(self, s):
         """
         Zeros the iterable instances of the joint object.
 
@@ -140,7 +140,7 @@ class Joint:
         self.vel_mags, self.vel_angles = np.zeros(s), np.zeros(s)
         self.acc_mags, self.acc_angles = np.zeros(s), np.zeros(s)
 
-    def set_position_data(self, i):
+    def _set_position_data(self, i):
         """
         Sets the position data at the index i.
 
@@ -149,7 +149,7 @@ class Joint:
         self.x_positions[i] = self.x_pos
         self.y_positions[i] = self.y_pos
 
-    def set_velocity_data(self, i):
+    def _set_velocity_data(self, i):
         """
         Sets the velocity, vel_mag, and vel_angle data at the index i.
 
@@ -163,7 +163,7 @@ class Joint:
         self.vel_mags[i] = mag
         self.vel_angles[i] = angle
 
-    def set_acceleration_data(self, i):
+    def _set_acceleration_data(self, i):
         """
         Sets the acceleration, acc_mag, and acc_angle data at the index i.
 
@@ -173,7 +173,7 @@ class Joint:
         self.x_accelerations[i] = self.x_acc
         self.y_accelerations[i] = self.y_acc
 
-        mag, angle = self.acc_mag()
+        mag, angle = self._acc_mag()
         self.acc_mags[i] = mag
         self.acc_angles[i] = angle
 
@@ -236,10 +236,10 @@ class Mechanism:
 
         if isinstance(self.pos, np.ndarray):
             for v in self.vectors:
-                v.zero(self.pos.shape[0])
+                v._zero(self.pos.shape[0])
 
             for j in self.joints:
-                j.zero(self.pos.shape[0])
+                j._zero(self.pos.shape[0])
 
             if isinstance(self.vel, np.ndarray):
                 assert self.pos.size == self.vel.size, "vel input size does not match pos input size."
@@ -247,144 +247,144 @@ class Mechanism:
             if isinstance(self.acc, np.ndarray):
                 assert self.pos.size == self.acc.size, "acc input size does not match pos input size."
 
-    def fix_position(self):
+    def _fix_position(self):
         """
         Fixes the positions of all the joints assuming that all vectors are defined locally, meaning that each vector's
         length, angle, r_dot, omega, r_ddot, and alpha are known.
         """
         origin = self.origin
-        origin.fix_position(0, 0)
+        origin._fix_position(0, 0)
 
         attached_to_origin = []
         vectors = self.positions[:]
 
         for v in vectors:
             if v.joints[0] == origin:
-                v.fix_global_position()
+                v._fix_global_position()
                 attached_to_origin.append(v)
             elif v.joints[1] == origin:
-                v_rev = v.reverse()
-                v_rev.fix_global_position()
+                v_rev = v._reverse()
+                v_rev._fix_global_position()
                 attached_to_origin.append(v)
 
         for v in attached_to_origin:
             vectors.remove(v)
 
         counter = 0
-        while not self.position_is_fixed():
+        while not self._position_is_fixed():
             for v in vectors:
-                if self.position_is_fixed():
+                if self._position_is_fixed():
                     break
                 for r in attached_to_origin:
                     sum_ = get_sum(r, v)
                     if sum_:
                         attached_to_origin.append(sum_)
-                        sum_.fix_global_position()
+                        sum_._fix_global_position()
                         break
             counter += 1
             if counter > 10:
                 raise Exception('Not all position vectors are able to be fixed to origin. Are the all joints linked?')
 
-    def fix_velocity(self):
+    def _fix_velocity(self):
         """
         Fixes the velocity of all the joints assuming that all vectors are defined locally, meaning that each vector's
         length, angle, r_dot, omega, r_ddot, and alpha are known.
         """
         origin = self.origin
-        origin.fix_velocity(0, 0)
+        origin._fix_velocity(0, 0)
 
         attached_to_origin = []
         vectors = self.velocities[:]
 
         for v in vectors:
             if v.joints[0] == origin:
-                v.fix_global_velocity()
+                v._fix_global_velocity()
                 attached_to_origin.append(v)
             elif v.joints[1] == origin:
-                v_rev = v.reverse()
-                v_rev.fix_global_velocity()
+                v_rev = v._reverse()
+                v_rev._fix_global_velocity()
                 attached_to_origin.append(v)
 
         for v in attached_to_origin:
             vectors.remove(v)
 
         counter = 0
-        while not self.velocity_is_fixed():
+        while not self._velocity_is_fixed():
             for v in vectors:
-                if self.velocity_is_fixed():
+                if self._velocity_is_fixed():
                     break
                 for r in attached_to_origin:
                     sum_ = get_sum(r, v)
                     if sum_:
                         attached_to_origin.append(sum_)
-                        sum_.fix_global_velocity()
+                        sum_._fix_global_velocity()
                         break
             counter += 1
             if counter > 10:
                 raise Exception('Not all velocity vectors are able to be fixed to origin. Are the all joints linked?')
 
-    def fix_acceleration(self):
+    def _fix_acceleration(self):
         """
         Fixes the accelerations of all the joints assuming that all vectors are defined locally, meaning that the
         vector's length, angle, r_dot, omega, r_ddot, and alpha are known.
         """
         origin = self.origin
-        origin.fix_acceleration(0, 0)
+        origin._fix_acceleration(0, 0)
 
         attached_to_origin = []
         vectors = self.accelerations[:]
 
         for v in vectors:
             if v.joints[0] == origin:
-                v.fix_global_acceleration()
+                v._fix_global_acceleration()
                 attached_to_origin.append(v)
             elif v.joints[1] == origin:
-                v_rev = v.reverse()
-                v_rev.fix_global_acceleration()
+                v_rev = v._reverse()
+                v_rev._fix_global_acceleration()
                 attached_to_origin.append(v)
 
         for v in attached_to_origin:
             vectors.remove(v)
 
         counter = 0
-        while not self.acceleration_is_fixed():
+        while not self._acceleration_is_fixed():
             for v in vectors:
-                if self.acceleration_is_fixed():
+                if self._acceleration_is_fixed():
                     break
                 for r in attached_to_origin:
                     sum_ = get_sum(r, v)
                     if sum_:
                         attached_to_origin.append(sum_)
-                        sum_.fix_global_acceleration()
+                        sum_._fix_global_acceleration()
                         break
             counter += 1
             if counter > 10:
                 raise Exception('Not all velocity vectors are able to be fixed to origin. Are the all joints linked?')
 
-    def position_is_fixed(self):
+    def _position_is_fixed(self):
         """
         :return: True if all the positions of the joints are fixed.
         """
         for joint in self.joints:
-            if not joint.position_is_fixed():
+            if not joint._position_is_fixed():
                 return False
         return True
 
-    def velocity_is_fixed(self):
+    def _velocity_is_fixed(self):
         """
         :return: True if all the velocities of the joints are fixed.
         """
         for joint in self.joints:
-            if not joint.velocity_is_fixed():
+            if not joint._velocity_is_fixed():
                 return False
         return True
 
-    def acceleration_is_fixed(self):
+    def _acceleration_is_fixed(self):
         """
         :return: True if all the accelerations of the joints are fixed.
         """
         for joint in self.joints:
-            if not joint.acceleration_is_fixed():
+            if not joint._acceleration_is_fixed():
                 return False
         return True
 
@@ -417,13 +417,13 @@ class Mechanism:
             print('VELOCITY')
             print('--------\n')
             if not to_five:
-                mechanism_data = [[v, v.get_mag()[0], np.rad2deg(v.get_mag()[1]), v.x, v.y] for v in
+                mechanism_data = [[v, v._get_mag()[0], np.rad2deg(v._get_mag()[1]), v.x, v.y] for v in
                                   self.velocities]
                 omega_slip_data = [[v, v.omega, v.r_dot] for v in self.velocities]
                 joint_data = [[j, j.vel_mag()[0], np.rad2deg(j.vel_mag()[1]), j.x_vel, j.y_vel] for j in
                               sorted(self.joints, key=lambda x: x.name)]
             else:
-                mechanism_data = [[v, f'{v.get_mag()[0]:.5f}', f'{np.rad2deg(v.get_mag()[1]):.5f}', f'{v.x:.5f}',
+                mechanism_data = [[v, f'{v._get_mag()[0]:.5f}', f'{np.rad2deg(v._get_mag()[1]):.5f}', f'{v.x:.5f}',
                                    f'{v.y:.5f}'] for v in self.velocities]
                 omega_slip_data = [[v, f'{v.omega:.5f}', f'{v.r_dot:.5f}'] for v in self.velocities]
                 joint_data = [[j, f'{j.vel_mag()[0]:.5f}', f'{np.rad2deg(j.vel_mag()[1]):.5f}', f'{j.x_vel:.5f}',
@@ -440,18 +440,18 @@ class Mechanism:
             print('ACCELERATION')
             print('------------\n')
             if not to_five:
-                mechanism_data = [[v, v.get_mag()[0], np.rad2deg(v.get_mag()[1]), v.x, v.y] for v in
+                mechanism_data = [[v, v._get_mag()[0], np.rad2deg(v._get_mag()[1]), v.x, v.y] for v in
                                   self.accelerations]
                 alpha_slip_data = [[v, v.alpha, v.r_ddot] for v in self.accelerations]
-                joint_data = [[j, j.acc_mag()[0], np.rad2deg(j.acc_mag()[1]), j.x_acc, j.y_acc] for j in
+                joint_data = [[j, j._acc_mag()[0], np.rad2deg(j._acc_mag()[1]), j.x_acc, j.y_acc] for j in
                               sorted(self.joints, key=lambda x: x.name)]
 
             else:
                 mechanism_data = [
-                    [v, f'{v.get_mag()[0]:.5f}', f'{np.rad2deg(v.get_mag()[1]):.5f}', f'{v.x:.5f}', f'{v.y:.5f}'] for v
+                    [v, f'{v._get_mag()[0]:.5f}', f'{np.rad2deg(v._get_mag()[1]):.5f}', f'{v.x:.5f}', f'{v.y:.5f}'] for v
                     in self.accelerations]
                 alpha_slip_data = [[v, f'{v.alpha:.5f}', f'{v.r_ddot:.5f}'] for v in self.accelerations]
-                joint_data = [[j, f'{j.acc_mag()[0]:.5f}', f'{np.rad2deg(j.acc_mag()[1]):.5f}', f'{j.x_acc:.5f}',
+                joint_data = [[j, f'{j._acc_mag()[0]:.5f}', f'{np.rad2deg(j._acc_mag()[1]):.5f}', f'{j.x_acc:.5f}',
                                f'{j.y_acc:.5f}'] for j in sorted(self.joints, key=lambda x: x.name)]
 
             Data(mechanism_data, headers=['Vector', 'Mag', 'Angle', 'x', 'y']).print(table=True)
@@ -520,24 +520,24 @@ class Mechanism:
         vectors and joints if vel and acc for the mechanism is given.
         """
         fsolve(self.loops, self.guess[0], args=(self.pos,))
-        self.fix_position()
+        self._fix_position()
 
         if self.vel is not None:
             for v in self.vectors:
                 v.get = v.vel.get
-                v.update_velocity()
+                v._update_velocity()
 
             fsolve(self.loops, self.guess[1], args=(self.vel,))
-            self.fix_velocity()
+            self._fix_velocity()
 
         if self.acc is not None:
             assert self.vel is not None, "vel input not defined, but necessary to solve for accelerations."
             for v in self.vectors:
                 v.get = v.acc.get
-                v.update_acceleration()
+                v._update_acceleration()
 
             fsolve(self.loops, self.guess[2], args=(self.acc,))
-            self.fix_acceleration()
+            self._fix_acceleration()
 
     def iterate(self):
         """
@@ -562,43 +562,43 @@ class Mechanism:
 
             pos = fsolve(self.loops, guess1, args=(self.pos[i],))
             guess1 = pos
-            self.fix_position()
+            self._fix_position()
             for v in self.vectors:
-                v.set_position_data(i)
+                v._set_position_data(i)
 
             for j in self.joints:
-                j.set_position_data(i)
+                j._set_position_data(i)
 
             if self.vel is not None:
                 for v in self.vectors:
                     v.get = v.vel.get
-                    v.update_velocity()
+                    v._update_velocity()
 
                 vel = fsolve(self.loops, guess2, args=(self.vel[i],))
                 guess2 = vel
-                self.fix_velocity()
+                self._fix_velocity()
 
                 for v in self.vectors:
-                    v.set_velocity_data(i)
+                    v._set_velocity_data(i)
 
                 for j in self.joints:
-                    j.set_velocity_data(i)
+                    j._set_velocity_data(i)
 
             if self.acc is not None:
                 assert self.vel is not None, "vel input not defined, but necessary to solve for accelerations."
                 for v in self.vectors:
                     v.get = v.acc.get
-                    v.update_acceleration()
+                    v._update_acceleration()
 
                 acc = fsolve(self.loops, guess3, args=(self.acc[i],))
                 guess3 = acc
-                self.fix_acceleration()
+                self._fix_acceleration()
 
                 for v in self.vectors:
-                    v.set_acceleration_data(i)
+                    v._set_acceleration_data(i)
 
                 for j in self.joints:
-                    j.set_acceleration_data(i)
+                    j._set_acceleration_data(i)
 
             self.clear_joints()
 
@@ -607,7 +607,7 @@ class Mechanism:
         Clears the joint data. Must be called between two different calls of calculate()
         """
         for joint in self.joints:
-            joint.clear()
+            joint._clear()
 
     def get_bounds(self):
         """
@@ -625,7 +625,6 @@ class Mechanism:
         return (x_min, x_max), (y_min, y_max)
 
     def get_animation(self, grid=True, cushion=1):
-        # Todo: A step value could be added here to adjust speed
         """
         :param: cushion: int; Add a cushion around the plot.
         :param: grid: bool; Add the grid if true.
@@ -695,11 +694,11 @@ def get_sum(v1, v2):
     if j2 == j3:
         return v1 + v2
     elif j1 == j3:
-        return v1.reverse() + v2
+        return v1._reverse() + v2
     elif j1 == j4:
-        return v1.reverse() + v2.reverse()
+        return v1._reverse() + v2._reverse()
     elif j2 == j4:
-        return v1 + v2.reverse()
+        return v1 + v2._reverse()
     return None
 
 
