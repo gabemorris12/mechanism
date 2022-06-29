@@ -336,7 +336,7 @@ Select `Curve Through XYZ Points`
 ![image not found](https://github.com/gabemorris12/mechanism/raw/master/images/curve_xyz.png)
 
 The cam profile will always be extended to the front plane due to the manner in which SolidWorks defines the global
-coordinates. Next, select browse and choose the saved coordinate file.
+coordinates. Next, select browse and choose the saved coordinate file, making sure that text files are able to be seen.
 
 ![image not found](https://github.com/gabemorris12/mechanism/raw/master/images/select_file.PNG)
 
