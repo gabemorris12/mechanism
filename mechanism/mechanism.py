@@ -115,7 +115,7 @@ class Joint:
         self.x_vel, self.y_vel = None, None
         self.x_acc, self.y_acc = None, None
 
-    def vel_mag(self):
+    def _vel_mag(self):
         """
         :return: A tuple of the magnitude and angle of the velocity of the joint.
         """
@@ -159,7 +159,7 @@ class Joint:
         self.x_velocities[i] = self.x_vel
         self.y_velocities[i] = self.y_vel
 
-        mag, angle = self.vel_mag()
+        mag, angle = self._vel_mag()
         self.vel_mags[i] = mag
         self.vel_angles[i] = angle
 
@@ -420,13 +420,13 @@ class Mechanism:
                 mechanism_data = [[v, v._get_mag()[0], np.rad2deg(v._get_mag()[1]), v.x, v.y] for v in
                                   self.velocities]
                 omega_slip_data = [[v, v.omega, v.r_dot] for v in self.velocities]
-                joint_data = [[j, j.vel_mag()[0], np.rad2deg(j.vel_mag()[1]), j.x_vel, j.y_vel] for j in
+                joint_data = [[j, j._vel_mag()[0], np.rad2deg(j._vel_mag()[1]), j.x_vel, j.y_vel] for j in
                               sorted(self.joints, key=lambda x: x.name)]
             else:
                 mechanism_data = [[v, f'{v._get_mag()[0]:.5f}', f'{np.rad2deg(v._get_mag()[1]):.5f}', f'{v.x:.5f}',
                                    f'{v.y:.5f}'] for v in self.velocities]
                 omega_slip_data = [[v, f'{v.omega:.5f}', f'{v.r_dot:.5f}'] for v in self.velocities]
-                joint_data = [[j, f'{j.vel_mag()[0]:.5f}', f'{np.rad2deg(j.vel_mag()[1]):.5f}', f'{j.x_vel:.5f}',
+                joint_data = [[j, f'{j._vel_mag()[0]:.5f}', f'{np.rad2deg(j._vel_mag()[1]):.5f}', f'{j.x_vel:.5f}',
                                f'{j.y_vel:.5f}'] for j in sorted(self.joints, key=lambda x: x.name)]
 
             Data(mechanism_data, headers=['Vector', 'Mag', 'Angle', 'x', 'y']).print(table=True)
