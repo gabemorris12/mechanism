@@ -100,18 +100,20 @@ class SpurGear:
 
             if backlash:
                 self.backlash = backlash
-                assert backlash >= 0, 'Backlash cannot be negative. If so, there would be interference.'
+                # A negative backlash would imply that the user wants an internal/ring gear. If this is the case, then
+                # widening the profile is desired, since the space for a normal gear is now void.
+                # assert backlash >= 0, 'Backlash cannot be negative. If so, there would be interference.'
                 self.tooth_thickness = np.pi*self.r/self.N - 1/2*self.backlash
                 self.space_width = self.backlash + self.tooth_thickness
-
-            if self.backlash < 0:
+            elif self.backlash < 0:
                 self.backlash = 0.04/self.pd
                 self.tooth_thickness = np.pi*self.r/self.N - 1/2*self.backlash
                 self.space_width = self.backlash + self.tooth_thickness
         else:
             self.a, self.b = a, b
+            assert a > 0 and b > 0, 'Addendum and dedendum need to be defined if the agma argument is not present.'
             self.backlash = backlash
-            assert backlash >= 0, 'Backlash cannot be negative. If so, there would be interference.'
+            # assert backlash >= 0, 'Backlash cannot be negative. If so, there would be interference.'
             self.tooth_thickness = np.pi*self.r/self.N - 1/2*self.backlash
             self.space_width = self.backlash + self.tooth_thickness
 
