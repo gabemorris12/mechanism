@@ -15,8 +15,8 @@ class SpurGear:
 
     gear_appearance = appearance['gear_plot']
 
-    def __init__(self, N=0, pd=0, d=0, pressure_angle=20, agma=False, a=0, b=0, backlash=0, ignore_undercut=False,
-                 size=1000):
+    def __init__(self, N=0, pd=0, d=0, pressure_angle=20, agma=False, a=0, b=0, backlash=0, internal=False,
+                 ignore_undercut=False, size=1000):
         """
         In order to fully define the gear,
         - at least two of the following should be defined: N, pd, and d
@@ -40,6 +40,10 @@ class SpurGear:
                          and the tooth thickness are arc length measurements along the pitch circle. If backlash is not
                          specified and agma is set to true, the backlash will give a non-conservative estimate for the
                          backlash. Backlash, however, can be specified and agma set to true.
+        :param internal: If true, the involute will be based off an internal gear, in which the teeth are holes and
+                         everything around it gets filled. Internal gears are the inverse of external gears. When this
+                         happens, backlash needs to make the tooth profile wider instead of smaller. Also, the dedendum
+                         and addendum circles are switched. See Shigley's Machine Design 11th Edition page 688.
         :param ignore_undercut: If true, the undercut warning will be ignored. This occurs when the dedendum is large
                                 enough to extend passed the base circle.
         :param size: The size of one involute curve; make this smaller in some cases if SolidWorks says that the points
@@ -87,6 +91,8 @@ class SpurGear:
         self.r = self.d/2
         self.r_base = self.r*np.cos(self.pressure_angle)
 
+        self.internal = internal
+
         if agma:
             assert pressure_angle == 20 or pressure_angle == 25, 'AGMA standards only apply to 20 or 25 degree ' \
                                                                  'pressure angles.'
@@ -94,30 +100,43 @@ class SpurGear:
                 assert pressure_angle == 20, 'For diametral pitches greater than or equal to 20, the pressure angles ' \
                                              'must be 20 degrees.'
             self.a, self.b = 1/self.pd, 1.25/self.pd
-            self.tooth_thickness = 1.571/self.pd
-            self.space_width = 2*np.pi*self.r/self.N - self.tooth_thickness
-            self.backlash = self.space_width - self.tooth_thickness
+            # Using this from the text sometimes results in negative backlashes, which doesn't make sense with external
+            # gears. This comes from Design of Machinery, but I'm not convinced that this should be used. More research
+            # is required.
+            # self.tooth_thickness = 1.571/self.pd
+            # self.space_width = 2*np.pi*self.r/self.N - self.tooth_thickness
+            # self.backlash = self.space_width - self.tooth_thickness
 
-            if backlash:
-                self.backlash = backlash
-                # A negative backlash would imply that the user wants an internal/ring gear. If this is the case, then
-                # widening the profile is desired, since the space for a normal gear is now void.
-                # assert backlash >= 0, 'Backlash cannot be negative. If so, there would be interference.'
+            if not internal:
+                self.backlash = 0.04/self.pd
                 self.tooth_thickness = np.pi*self.r/self.N - 1/2*self.backlash
                 self.space_width = self.backlash + self.tooth_thickness
-            elif self.backlash < 0:
+            else:
                 self.backlash = 0.04/self.pd
+                self.tooth_thickness = np.pi*self.r/self.N + 1/2*self.backlash
+                self.space_width = -self.backlash + self.tooth_thickness
+
+            if backlash:
+                self.backlash = backlash if not internal else -backlash
+                # A negative backlash would imply that the user wants an internal/ring gear. If this is the case, then
+                # widening the profile is desired, since the space for a normal gear is now void.
+                assert backlash >= 0, 'Use a positive value for backlash.'
                 self.tooth_thickness = np.pi*self.r/self.N - 1/2*self.backlash
                 self.space_width = self.backlash + self.tooth_thickness
         else:
             self.a, self.b = a, b
             assert a > 0 and b > 0, 'Addendum and dedendum need to be defined if the agma argument is not present.'
-            self.backlash = backlash
-            # assert backlash >= 0, 'Backlash cannot be negative. If so, there would be interference.'
+            self.backlash = backlash if not internal else -backlash
+            assert backlash >= 0, 'Use a positive value for backlash.'
             self.tooth_thickness = np.pi*self.r/self.N - 1/2*self.backlash
             self.space_width = self.backlash + self.tooth_thickness
 
-        self.ra, self.rb = self.r + self.a, self.r - self.b
+        if not internal:
+            self.ra, self.rb = self.r + self.a, self.r - self.b
+        else:
+            # This is not the actual value of the radii. I just need this for the math, then I will switch it to the
+            # correct value later.
+            self.ra, self.rb = self.r + self.b, self.r - self.a
 
         if self.rb < self.r_base and not ignore_undercut:
             warnings.warn('The dedendum circle radius is less than the base circle radius. Undercutting will occur. To '
@@ -162,6 +181,9 @@ class SpurGear:
         self.tooth_profile = np.concatenate((self.involute_points, addendum_circle[1:-1],
                                              np.flip(self.involute_reflection)))
 
+        if internal:
+            self.ra, self.rb = self.r - self.a, self.r + self.b
+
     def plot(self, grid=True):
         """
         Shows a plot of the gear tooth.
@@ -179,7 +201,8 @@ class SpurGear:
 
         base = self.r_base*np.exp(1j*thetas)
         pitch = self.r*np.exp(1j*thetas)
-        dedendum = self.rb*np.exp(1j*dedendum_draw)
+        rb = self.r - self.b if not self.internal else self.r - self.a
+        dedendum = rb*np.exp(1j*dedendum_draw)
 
         fig, ax = plt.subplots()
         if grid:
