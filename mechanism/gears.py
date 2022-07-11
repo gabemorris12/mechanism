@@ -132,24 +132,26 @@ class SpurGear:
             self.space_width = self.backlash + self.tooth_thickness
 
         if not internal:
+            ra, rb = self.r + self.a, self.r - self.b
             self.ra, self.rb = self.r + self.a, self.r - self.b
         else:
-            # This is not the actual value of the radii. I just need this for the math, then I will switch it to the
-            # correct value later.
-            self.ra, self.rb = self.r + self.b, self.r - self.a
+            # rb and ra are not the actual values of the addendum and dedendum circles, but are presented here to make
+            # the math work out without adding a considerable amount of conditional statements.
+            ra, rb = self.r + self.b, self.r - self.a
+            self.ra, self.rb = self.r - self.a, self.r + self.b
 
-        if self.rb < self.r_base and not ignore_undercut:
+        if rb < self.r_base and not ignore_undercut:
             warnings.warn('The dedendum circle radius is less than the base circle radius. Undercutting will occur. To '
                           'fix this, make the gear bigger by increasing the pitch diameter or number of teeth. To '
                           'ignore this warning, pass "ignore_undercut=True" at the declaration of the gear object.',
                           RuntimeWarning)
 
-        if self.rb >= self.r_base:
-            theta_min = np.sqrt((self.rb/self.r_base)**2 - 1)
+        if rb >= self.r_base:
+            theta_min = np.sqrt((rb/self.r_base)**2 - 1)
         else:
             theta_min = 0
 
-        theta_max = np.sqrt((self.ra/self.r_base)**2 - 1)
+        theta_max = np.sqrt((ra/self.r_base)**2 - 1)
 
         # Get the involute curve coming out of the positive x-axis, then rotate the points.
         # Getting the angle for the point at the pitch circle
@@ -168,21 +170,18 @@ class SpurGear:
         y = self.r_base*np.sin(thetas) - self.r_base*thetas*np.cos(thetas)
         involute_points = x + 1j*y
         # noinspection PyTypeChecker
-        involute_points = np.insert(involute_points, 0, self.rb + 0j) if self.rb < self.r_base else involute_points
+        involute_points = np.insert(involute_points, 0, rb + 0j) if rb < self.r_base else involute_points
 
         # Rotate the involute curve and get the reflection/addendum circle
         self.involute_points = _rotate(involute_points, rotation)
         self.involute_reflection = -1*np.real(self.involute_points) + 1j*np.imag(self.involute_points)
         addendum_start = np.angle(self.involute_points[-1])
         addendum_end = np.angle(self.involute_reflection[-1])
-        addendum_circle = self.ra*np.exp(1j*np.linspace(addendum_start, addendum_end, size))
+        addendum_circle = ra*np.exp(1j*np.linspace(addendum_start, addendum_end, size))
 
         # Construct the tooth profile
         self.tooth_profile = np.concatenate((self.involute_points, addendum_circle[1:-1],
                                              np.flip(self.involute_reflection)))
-
-        if internal:
-            self.ra, self.rb = self.r - self.a, self.r + self.b
 
     def plot(self, grid=True):
         """
@@ -201,7 +200,7 @@ class SpurGear:
 
         base = self.r_base*np.exp(1j*thetas)
         pitch = self.r*np.exp(1j*thetas)
-        rb = self.r - self.b if not self.internal else self.r - self.a
+        rb = self.r - self.b if not self.internal else self.r - self.a  # Not technically true
         dedendum = rb*np.exp(1j*dedendum_draw)
 
         fig, ax = plt.subplots()
