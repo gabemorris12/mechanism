@@ -4,6 +4,7 @@ import warnings
 
 import matplotlib.pyplot as plt
 import numpy as np
+from scipy.optimize import fsolve
 
 from .dataframe import Data
 from .vectors import APPEARANCE
@@ -146,18 +147,11 @@ class SpurGear:
                           'ignore this warning, pass "ignore_undercut=True" at the declaration of the gear object.',
                           RuntimeWarning)
 
-        if rb >= self.r_base:
-            theta_min = np.sqrt((rb/self.r_base)**2 - 1)
-        else:
-            theta_min = 0
-
-        theta_max = np.sqrt((ra/self.r_base)**2 - 1)
-
         # Get the involute curve coming out of the positive x-axis, then rotate the points.
         # Getting the angle for the point at the pitch circle
         theta_pitch = np.sqrt((self.r/self.r_base)**2 - 1)
-        x_pitch = self.r_base*np.cos(theta_pitch) + self.r_base*theta_pitch*np.sin(theta_pitch)
-        y_pitch = self.r_base*np.sin(theta_pitch) - self.r_base*theta_pitch*np.cos(theta_pitch)
+        x_pitch = self._x_inv(theta_pitch)
+        y_pitch = self._y_inv(theta_pitch)
         theta_pitch = np.angle((x_pitch + 1j*y_pitch))
 
         # Get the angle corresponding to the circular tooth thickness and the amount needed to rotate the tooth
@@ -165,12 +159,28 @@ class SpurGear:
         rotation = np.pi/2 - theta_pitch - pitch_angle/2
 
         # Get the involute curve. Create just a linear relationship if the dedendum radius is less than the base radius.
-        thetas = np.linspace(theta_min, theta_max, size)
-        x = self.r_base*np.cos(thetas) + self.r_base*thetas*np.sin(thetas)
-        y = self.r_base*np.sin(thetas) - self.r_base*thetas*np.cos(thetas)
+        # See the planetary gear branch in the gear bearing repository as this is quite complex to pick up again.
+        if rb >= self.r_base:
+            theta_min = np.sqrt((rb/self.r_base)**2 - 1)  # Relationship is a result of converting to polar form
+            theta_max = np.sqrt((ra/self.r_base)**2 - 1)
+            thetas = np.linspace(theta_min, theta_max, size)
+            x = self._x_inv(thetas)
+            y = self._y_inv(thetas)
+        else:
+            theta_max = np.sqrt((ra/self.r_base)**2 - 1)
+            # Using the absolute value because this does some funky stuff sometimes, but only when there is a greater
+            # portion of the gear under the base circle.
+            theta_min = np.abs(fsolve(self._solve_theta_min, np.array([theta_max, ]), args=(rb, )))[0]
+            theta1 = np.flip(np.linspace(0, theta_min, int(size/2)))
+            x1 = 2*self.r_base - self._x_inv(theta1)
+            y1 = self._y_inv(theta1)
+            theta2 = np.linspace(theta1[0] - theta1[1], theta_max, int(size/2))
+            x2 = self._x_inv(theta2)
+            y2 = self._y_inv(theta2)
+            x = np.concatenate((x1, x2))
+            y = np.concatenate((y1, y2))
+
         involute_points = x + 1j*y
-        # noinspection PyTypeChecker
-        involute_points = np.insert(involute_points, 0, rb + 0j) if rb < self.r_base else involute_points
 
         # Rotate the involute curve and get the reflection/addendum circle
         self.involute_points = _rotate(involute_points, rotation)
@@ -253,6 +263,26 @@ class SpurGear:
                 ['Circular Backlash', f'{self.backlash:.5f}']]
 
         Data(info, headers=['Property', 'Value']).print(table=True)
+
+    def _x_inv(self, thetas_):
+        """
+        Calculates the x values of an involute curve.
+        """
+        return self.r_base*np.cos(thetas_) + self.r_base*thetas_*np.sin(thetas_)
+
+    def _y_inv(self, thetas_):
+        """
+        Calculates the y values of an involute curve.
+        """
+        return self.r_base*np.sin(thetas_) - self.r_base*thetas_*np.cos(thetas_)
+
+    def _solve_theta_min(self, theta_, rb_):
+        """
+        Solves for the value of theta min when the base circle is larger than the dedendum circle.
+        """
+        x_prime_ = 2*self.r_base - self._x_inv(theta_)
+        y_ = self._y_inv(theta_)
+        return np.abs(x_prime_ + 1j*y_) - rb_
 
 
 def _rotate(coords, rotation):
