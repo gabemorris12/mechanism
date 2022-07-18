@@ -414,6 +414,9 @@ matches the units of the analysis.
 
 ![image not found](https://github.com/gabemorris12/mechanism/raw/master/images/gear60_compare.PNG)
 
-The results are a near identical match. If analyzed closely, the only difference is the tooth thickness. The gray gear
+The results are a near identical match, and the addendum and dedendum fit perfectly. If analyzed closely, the only difference is the tooth thickness. The gray gear
 (the resulting gear from this package) has a slightly larger tooth thickness compared to SolidWorks' gear. This is due
-to the unknown way SolidWorks calculates the backlash of the gear. 
+to the fact that SolidWorks doesn't use an involute gear tooth profile, as gears from the SolidWorks toolbox are for 
+visuals only. Instead, the tooth profile is circular. Their gears should not be used for manufacturing as this is not 
+accurate at all. The purpose of the involute tooth profile is that the meshing of gears will always produce a constant 
+angular velocity, even when the gears aren't perfectly placed tangent to the pitch circles.
