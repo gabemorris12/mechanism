@@ -22,6 +22,26 @@
       "zorder": 2
     }
   },
+  "vel_arrow": {
+    "arrowstyle": "-|>",
+    "shrinkA": 0,
+    "shrinkB": 0,
+    "mutation_scale": 20,
+    "lw": 1.5,
+    "zorder": 5,
+    "facecolor": "deepskyblue",
+    "edgecolor": "deepskyblue"
+  },
+  "acc_arrow": {
+    "arrowstyle": "-|>",
+    "shrinkA": 0,
+    "shrinkB": 0,
+    "mutation_scale": 20,
+    "lw": 1.5,
+    "zorder": 5,
+    "facecolor": "orange",
+    "edgecolor": "orange"
+  },
   "cam_plot": {
     "default": {
       "color": "maroon"

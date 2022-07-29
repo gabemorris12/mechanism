@@ -1,6 +1,7 @@
 import json
 
 import matplotlib.pyplot as plt
+from matplotlib.patches import FancyArrowPatch
 import numpy as np
 from matplotlib.animation import FuncAnimation
 from scipy.optimize import fsolve
@@ -12,10 +13,16 @@ from .vectors import VectorBase, APPEARANCE
 class Joint:
     follow_all = False
 
-    def __init__(self, name='', follow=None, style=None, **kwargs):
+    def __init__(self, name='', follow=None, style=None, exclude=None, vel_arrow_kwargs=None, acc_arrow_kwargs=None,
+                 **kwargs):
         """
         :param: name: str; The name of the joint. Typically, a capital letter.
         :param: follow: bool; If true, the path of the joint will be drawn in the animation.
+        :param: style: str; A named style located in the appearance json and under the 'joint_path' option.
+        :param: exclude: bool; If true, the velocity and acceleration arrows will not be displayed in plots.
+        :param: vel_arrow_kwargs: dict; kwargs to be passed into the FancyArrowPatch that makes up the velocity arrows.
+        :param: acc_arrow_kwargs: dict; kwargs to be passed into the FancyArrowPatch that makes up the acceleration
+                arrows.
         :param: kwargs: Extra arguments that get past to plt.plot(). Useful only if follow is set to true.
 
         Instance Variables
@@ -47,6 +54,12 @@ class Joint:
         self.vel_mags, self.vel_angles = None, None
         self.acc_mags, self.acc_angles = None, None
 
+        self._x_vel_scaled, self._y_vel_scaled = None, None
+        self._x_acc_scaled, self._y_acc_scaled = None, None
+        self._x_vel_scales, self._y_vel_scales = None, None
+        self._x_acc_scales, self._y_acc_scales = None, None
+        self._vel_heads, self._acc_heads = None, None  # array of complex numbers
+
         if follow is None:
             self.follow = self.follow_all
         else:
@@ -61,6 +74,20 @@ class Joint:
             self.kwargs = kwargs
         else:
             self.kwargs = appearance['joint_path']['default']
+
+        if vel_arrow_kwargs:
+            self.vel_arrow_kwargs = vel_arrow_kwargs
+        elif exclude:
+            self.vel_arrow_kwargs = dict(lw=0)
+        else:
+            self.vel_arrow_kwargs = appearance['vel_arrow']
+
+        if acc_arrow_kwargs:
+            self.acc_arrow_kwargs = acc_arrow_kwargs
+        elif exclude:
+            self.acc_arrow_kwargs = dict(lw=0)
+        else:
+            self.acc_arrow_kwargs = appearance['acc_arrow']
 
     def _position_is_fixed(self):
         """
@@ -176,6 +203,58 @@ class Joint:
         mag, angle = self._acc_mag()
         self.acc_mags[i] = mag
         self.acc_angles[i] = angle
+
+    def _scale_xy(self, scale, velocity=False, acceleration=False):
+        """
+        Sets the x and y components of a length scaled by the amount 'scale'.
+        """
+        if velocity:
+            c_num = self.x_vel + 1j*self.y_vel
+            c_num = scale*np.abs(c_num)*np.exp(1j*np.angle(c_num))
+            self._x_vel_scaled, self._y_vel_scaled = np.real(c_num), np.imag(c_num)
+        elif acceleration:
+            c_num = self.x_acc + 1j*self.y_acc
+            c_num = scale*np.abs(c_num)*np.exp(1j*np.angle(c_num))
+            self._x_acc_scaled, self._y_acc_scaled = np.real(c_num), np.imag(c_num)
+
+    def _get_head_point(self, velocity=False, acceleration=False):
+        """
+        :return: returns a complex number of a global position of the scaled arrow heads
+        """
+        Rp = self.x_pos + 1j*self.y_pos
+        if velocity:
+            R_prime_p = self._x_vel_scaled + 1j*self._y_vel_scaled  # A point relative to the position of the joint
+            c_num = Rp + R_prime_p
+            return c_num
+        elif acceleration:
+            R_prime_p = self._x_acc_scaled + 1j*self._y_acc_scaled  # A point relative to the position of the joint
+            c_num = Rp + R_prime_p
+            return c_num
+
+    def _scale_xys(self, scale, velocity=False, acceleration=False):
+        """
+        Sets the x and y components of a length scaled by the amount 'scale' for all positions. Used in the animation.
+        """
+        if velocity:
+            c_nums = self.x_velocities + 1j*self.y_velocities
+            c_nums = scale*np.abs(c_nums)*np.exp(1j*np.angle(c_nums))
+            self._x_vel_scales, self._y_vel_scales = np.real(c_nums), np.imag(c_nums)
+        elif acceleration:
+            c_nums = self.x_accelerations + 1j*self.y_accelerations
+            c_nums = scale*np.abs(c_nums)*np.exp(1j*np.angle(c_nums))
+            self._x_acc_scales, self._y_acc_scales = np.real(c_nums), np.imag(c_nums)
+
+    def _get_head_points(self, velocity=False, acceleration=False):
+        """
+        Populates the head points.
+        """
+        Rp = self.x_positions + 1j*self.y_positions
+        if velocity:
+            R_prime_p = self._x_vel_scales + 1j*self._y_vel_scales  # A point relative to the position of the joint
+            self._vel_heads = Rp + R_prime_p
+        elif acceleration:
+            R_prime_p = self._x_acc_scales + 1j*self._y_acc_scales  # A point relative to the position of the joint
+            self._acc_heads = Rp + R_prime_p
 
     def __repr__(self):
         return f'Joint(name={self.name})'
@@ -460,13 +539,52 @@ class Mechanism:
             print('')
             Data(joint_data, headers=['Joint', 'Mag', 'Angle', 'x', 'y']).print(table=True)
 
-    def plot(self, velocity=False, acceleration=False, show_joints=True, grid=True, cushion=1):
+    def _find_scale(self, x_min, x_max, y_min, y_max, scale_length=0.1, kind='plot', velocity=False,
+                    acceleration=False):
+        """
+        x_min, x_max, y_min, y_max are data points that define the bounding box of the system. The 'kind' parameter
+        determine whether to find the scale for an instant "plot" or an "animation" (those are the only two possible
+        kinds). The 'velocity' and 'acceleration' parameters determines whether to find the scale for velocity or
+        acceleration. The 'scale_length' is the fraction for which the velocity/acceleration vector is to the
+        diagonal length of the bounding box.
+
+        Finds the maximum magnitude of velocity/acceleration for all joints, then returns a scale value for which to
+        scale up/down
+        the velocity arrows when plotting.
+        """
+        if kind == 'plot':
+            if velocity:
+                max_mag = max([np.sqrt(j.x_vel**2 + j.y_vel**2) for j in self.joints])
+            elif acceleration:
+                max_mag = max([np.sqrt(j.x_acc**2 + j.y_acc**2) for j in self.joints])
+            else:
+                raise Exception('Neither velocity or acceleration specified.')
+            # Diagonal of bounding box
+            max_length = np.sqrt((x_max - x_min)**2 + (y_max - y_min)**2)
+            return scale_length*max_length/max_mag
+        elif kind == 'animation':
+            if velocity:
+                vel_mags = [j.vel_mags for j in self.joints]
+                max_mag = np.amax(vel_mags)
+            elif acceleration:
+                acc_mags = [j.acc_mags for j in self.joints]
+                max_mag = np.amax(acc_mags)
+            else:
+                raise Exception('Neither velocity or acceleration specified.')
+            # Diagonal of bounding box
+            max_length = np.sqrt((x_max - x_min)**2 + (y_max - y_min)**2)
+            return scale_length*max_length/max_mag
+
+    def plot(self, velocity=False, acceleration=False, scale=0.1, show_joints=True, grid=True, cushion=1):
         """
         Plots the instance of the mechanism; calculate() method must be called before calling this method.
 
         :param velocity: bool; Plots velocity vectors if True
         :param acceleration: bool; Plots acceleration vectors if True
-        :param show_joints: Adds joint labels to the plot (only if velocity=False and acceleration=False)
+        :param scale: float; If velocity or acceleration is specified, the scale will define the relative length of the
+                      maximum magnitude to the diagonal of the bounding box. A scale of 0.1 (default) would indicate
+                      that the maximum magnitude of the velocity/acceleration is 1/10 the diagonal of the bounding box.
+        :param show_joints: bool; Adds joint labels to the plot (only if velocity=False and acceleration=False)
         :param grid: bool; Add the grid if true.
         :param cushion: int, float; The thickness of the cushion around the plot.
         """
@@ -478,6 +596,24 @@ class Mechanism:
 
         y_values = [j.y_pos for j in self.joints]
         x_values = [j.x_pos for j in self.joints]
+        min_y, max_y = min(y_values), max(y_values)
+        min_x, max_x = min(x_values), max(x_values)
+
+        if velocity:
+            sf = self._find_scale(min_x, max_x, min_y, max_y, scale_length=scale, kind='plot', velocity=True)
+            for j in self.joints:
+                j._scale_xy(sf, velocity=True)
+                c_num = j._get_head_point(velocity=True)
+                x_values.append(np.real(c_num))
+                y_values.append(np.imag(c_num))
+        if acceleration:
+            sf = self._find_scale(min_x, max_x, min_y, max_y, scale_length=scale, kind='plot', acceleration=True)
+            for j in self.joints:
+                j._scale_xy(sf, acceleration=True)
+                c_num = j._get_head_point(acceleration=True)
+                x_values.append(np.real(c_num))
+                y_values.append(np.imag(c_num))
+
         min_y, max_y = min(y_values), max(y_values)
         min_x, max_x = min(x_values), max(x_values)
 
@@ -494,12 +630,16 @@ class Mechanism:
 
         for j in self.joints:
             if velocity:
-                ax.quiver(j.x_pos, j.y_pos, j.x_vel, j.y_vel, angles='xy', scale_units='xy', color='deepskyblue',
-                          zorder=3)
+                c_num = j._get_head_point(velocity=True)
+                arrow = FancyArrowPatch(posA=(j.x_pos, j.y_pos), posB=(np.real(c_num), np.imag(c_num)),
+                                        **j.vel_arrow_kwargs)
+                ax.add_patch(arrow)
 
             if acceleration:
-                ax.quiver(j.x_pos, j.y_pos, j.x_acc, j.y_acc, angles='xy', scale_units='xy', color='orange', zorder=3)
-
+                c_num = j._get_head_point(acceleration=True)
+                arrow = FancyArrowPatch(posA=(j.x_pos, j.y_pos), posB=(np.real(c_num), np.imag(c_num)),
+                                        **j.acc_arrow_kwargs)
+                ax.add_patch(arrow)
             if not velocity and not acceleration and show_joints:
                 ax.annotate(j.name, (j.x_pos, j.y_pos), size='large', zorder=5)
 
@@ -624,21 +764,55 @@ class Mechanism:
 
         return (x_min, x_max), (y_min, y_max)
 
-    def get_animation(self, grid=True, cushion=1):
+    def get_animation(self, velocity=False, acceleration=False, scale=0.1, grid=True, cushion=1):
         """
-        :param: cushion: int; Add a cushion around the plot.
-        :param: grid: bool; Add the grid if true.
+        :param velocity: bool; Plots velocity vectors if True
+        :param acceleration: bool; Plots acceleration vectors if True
+        :param scale: float; If velocity or acceleration is specified, the scale will define the relative length of the
+                      maximum magnitude to the diagonal of the bounding box. A scale of 0.1 (default) would indicate
+                      that the maximum magnitude of the velocity/acceleration is 1/10 the diagonal of the bounding box.
+        :param grid: bool; Add the grid if true.
+        :param cushion: int, float; Add a cushion around the plot.
         :return: An animation, figure, and axes object.
         """
         fig, ax = plt.subplots()
         ax.set_aspect('equal')
         x_limits, y_limits = self.get_bounds()
 
+        vel_arrow_patches, acc_arrow_patches = [], []
+        x_points, y_points = [], []
+        if velocity:
+            sf = self._find_scale(*(x_limits + y_limits), scale_length=scale, kind='animation', velocity=True)
+            for j in self.joints:
+                j._scale_xys(sf, velocity=True)
+                j._get_head_points(velocity=True)
+                arrow_obj = FancyArrowPatch(posA=(0, 0), posB=(0, 0), **j.vel_arrow_kwargs)
+                vel_arrow_patches.append(arrow_obj)
+                ax.add_patch(arrow_obj)
+                x_points.extend([j.x_positions, np.real(j._vel_heads)])
+                y_points.extend([j.y_positions, np.imag(j._vel_heads)])
+        if acceleration:
+            sf = self._find_scale(*(x_limits + y_limits), scale_length=scale, kind='animation', acceleration=True)
+            for j in self.joints:
+                j._scale_xys(sf, acceleration=True)
+                j._get_head_points(acceleration=True)
+                arrow_obj = FancyArrowPatch(posA=(0, 0), posB=(0, 0), **j.acc_arrow_kwargs)
+                acc_arrow_patches.append(arrow_obj)
+                ax.add_patch(arrow_obj)
+                x_points.append(np.real(j._acc_heads))
+                y_points.append(np.imag(j._acc_heads))
+
         if grid:
             ax.grid(zorder=1)
 
-        ax.set_xlim(x_limits[0] - cushion, x_limits[1] + cushion)
-        ax.set_ylim(y_limits[0] - cushion, y_limits[1] + cushion)
+        if velocity or acceleration:
+            x_min, x_max = np.amin(x_points), np.amax(x_points)
+            y_min, y_max = np.amin(y_points), np.amax(y_points)
+        else:
+            x_min, x_max = x_limits
+            y_min, y_max = y_limits
+        ax.set_xlim(x_min - cushion, x_max + cushion)
+        ax.set_ylim(y_min - cushion, y_max + cushion)
 
         plot_dict = {}
         for v in self.vectors:
@@ -654,13 +828,25 @@ class Mechanism:
         def init():
             for line in plot_dict.values():
                 line.set_data([], [])
-            return list(plot_dict.values())
+            for arrow in vel_arrow_patches:
+                arrow.set_positions(posA=(0, 0), posB=(0, 0))
+            for arrow in acc_arrow_patches:
+                arrow.set_positions(posA=(0, 0), posB=(0, 0))
+            return list(plot_dict.values()) + vel_arrow_patches + acc_arrow_patches
 
         def animate(i):
             for vec, line in plot_dict.items():
                 j1, j2 = vec.joints
                 line.set_data((j1.x_positions[i], j2.x_positions[i]), (j1.y_positions[i], j2.y_positions[i]))
-            return list(plot_dict.values())
+            if velocity:
+                for joint, arrow in zip(self.joints, vel_arrow_patches):
+                    x_head, y_head = np.real(joint._vel_heads)[i], np.imag(joint._vel_heads)[i]
+                    arrow.set_positions(posA=(joint.x_positions[i], joint.y_positions[i]), posB=(x_head, y_head))
+            if acceleration:
+                for joint, arrow in zip(self.joints, acc_arrow_patches):
+                    x_head, y_head = np.real(joint._acc_heads)[i], np.imag(joint._acc_heads)[i]
+                    arrow.set_positions(posA=(joint.x_positions[i], joint.y_positions[i]), posB=(x_head, y_head))
+            return list(plot_dict.values()) + vel_arrow_patches + acc_arrow_patches
 
         # noinspection PyTypeChecker
         return FuncAnimation(fig, animate, frames=range(self.pos.shape[0]), interval=50, blit=True,

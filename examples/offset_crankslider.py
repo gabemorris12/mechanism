@@ -4,8 +4,9 @@ import numpy as np
 import matplotlib.pyplot as plt
 
 # Define joints first
-O, A, B, P = get_joints('O A B P')
-B.follow = True
+O, A = get_joints('O A')
+P = Joint(name='P', exclude=True)
+B = Joint(name='B', follow=True, color='darkgrey', zorder=1)
 
 # Define vectors
 # We omit the arguments if they are values that change. If the parameter is constant (such as the crank length), we pass
@@ -43,7 +44,7 @@ mechanism.iterate()  # solves for each item in the defined input arrays
 
 
 # Get the animation, figure, and axes objects
-ani, fig, ax = mechanism.get_animation()
+ani, fig, ax = mechanism.get_animation(velocity=True, acceleration=True, scale=0.2)
 ax.set_title('Offset Crank Slider')
 
 # ani.save('../animations/offset_crankslider.mp4', dpi=240)
