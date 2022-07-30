@@ -29,8 +29,8 @@
     "mutation_scale": 20,
     "lw": 1.5,
     "zorder": 5,
-    "facecolor": "deepskyblue",
-    "edgecolor": "deepskyblue"
+    "facecolor": "darkgrey",
+    "edgecolor": "darkgrey"
   },
   "acc_arrow": {
     "arrowstyle": "-|>",

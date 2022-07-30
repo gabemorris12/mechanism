@@ -6,7 +6,7 @@ import matplotlib.pyplot as plt
 # Define joints first
 O, A = get_joints('O A')
 P = Joint(name='P', exclude=True)
-B = Joint(name='B', follow=True, color='darkgrey', zorder=1)
+B = Joint(name='B', follow=True)
 
 # Define vectors
 # We omit the arguments if they are values that change. If the parameter is constant (such as the crank length), we pass

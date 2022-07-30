@@ -3,11 +3,14 @@ import json
 import matplotlib.pyplot as plt
 from matplotlib.patches import FancyArrowPatch
 import numpy as np
-from matplotlib.animation import FuncAnimation
 from scipy.optimize import fsolve
 
 from .dataframe import Data
 from .vectors import VectorBase, APPEARANCE
+from .player import Player
+
+
+# going = True
 
 
 class Joint:
@@ -600,6 +603,7 @@ class Mechanism:
         min_x, max_x = min(x_values), max(x_values)
 
         if velocity:
+            assert self.vel is not None, 'There is no input for velocity.'
             sf = self._find_scale(min_x, max_x, min_y, max_y, scale_length=scale, kind='plot', velocity=True)
             for j in self.joints:
                 j._scale_xy(sf, velocity=True)
@@ -607,6 +611,7 @@ class Mechanism:
                 x_values.append(np.real(c_num))
                 y_values.append(np.imag(c_num))
         if acceleration:
+            assert self.acc is not None, 'There is no input for acceleration.'
             sf = self._find_scale(min_x, max_x, min_y, max_y, scale_length=scale, kind='plot', acceleration=True)
             for j in self.joints:
                 j._scale_xy(sf, acceleration=True)
@@ -764,13 +769,15 @@ class Mechanism:
 
         return (x_min, x_max), (y_min, y_max)
 
-    def get_animation(self, velocity=False, acceleration=False, scale=0.1, grid=True, cushion=1):
+    def get_animation(self, velocity=False, acceleration=False, scale=0.1, stamp=None, grid=True, cushion=1):
         """
         :param velocity: bool; Plots velocity vectors if True
         :param acceleration: bool; Plots acceleration vectors if True
         :param scale: float; If velocity or acceleration is specified, the scale will define the relative length of the
                       maximum magnitude to the diagonal of the bounding box. A scale of 0.1 (default) would indicate
                       that the maximum magnitude of the velocity/acceleration is 1/10 the diagonal of the bounding box.
+        :param stamp: np.ndarray; Shows a text stamp in the animation for displaying any kind of input. Must be the same
+                     size as the input and correspond to the input motion.
         :param grid: bool; Add the grid if true.
         :param cushion: int, float; Add a cushion around the plot.
         :return: An animation, figure, and axes object.
@@ -782,6 +789,7 @@ class Mechanism:
         vel_arrow_patches, acc_arrow_patches = [], []
         x_points, y_points = [], []
         if velocity:
+            assert self.vel is not None, 'There is no input for velocity.'
             sf = self._find_scale(*(x_limits + y_limits), scale_length=scale, kind='animation', velocity=True)
             for j in self.joints:
                 j._scale_xys(sf, velocity=True)
@@ -792,6 +800,7 @@ class Mechanism:
                 x_points.extend([j.x_positions, np.real(j._vel_heads)])
                 y_points.extend([j.y_positions, np.imag(j._vel_heads)])
         if acceleration:
+            assert self.acc is not None, 'There is no input for acceleration.'
             sf = self._find_scale(*(x_limits + y_limits), scale_length=scale, kind='animation', acceleration=True)
             for j in self.joints:
                 j._scale_xys(sf, acceleration=True)
@@ -825,6 +834,12 @@ class Mechanism:
             if j.follow:
                 ax.plot(j.x_positions, j.y_positions, **j.kwargs)
 
+        text_list = []
+        if stamp is not None:
+            assert stamp.size == self.pos.shape[0], "Given stamp array doesn't match the input size."
+            text = ax.text(0.05, 0.9, '', transform=ax.transAxes, bbox=dict(facecolor='white', edgecolor='white'))
+            text_list.append(text)
+
         def init():
             for line in plot_dict.values():
                 line.set_data([], [])
@@ -832,7 +847,9 @@ class Mechanism:
                 arrow.set_positions(posA=(0, 0), posB=(0, 0))
             for arrow in acc_arrow_patches:
                 arrow.set_positions(posA=(0, 0), posB=(0, 0))
-            return list(plot_dict.values()) + vel_arrow_patches + acc_arrow_patches
+            if text_list:
+                text.set_text('')
+            return list(plot_dict.values()) + vel_arrow_patches + acc_arrow_patches + text_list
 
         def animate(i):
             for vec, line in plot_dict.items():
@@ -846,11 +863,14 @@ class Mechanism:
                 for joint, arrow in zip(self.joints, acc_arrow_patches):
                     x_head, y_head = np.real(joint._acc_heads)[i], np.imag(joint._acc_heads)[i]
                     arrow.set_positions(posA=(joint.x_positions[i], joint.y_positions[i]), posB=(x_head, y_head))
-            return list(plot_dict.values()) + vel_arrow_patches + acc_arrow_patches
+            if text_list:
+                text.set_text(f'{stamp[i]:.3f}')
+            return list(plot_dict.values()) + vel_arrow_patches + acc_arrow_patches + text_list
 
         # noinspection PyTypeChecker
-        return FuncAnimation(fig, animate, frames=range(self.pos.shape[0]), interval=50, blit=True,
-                             init_func=init), fig, ax
+        ani = Player(fig, animate, frames=self.pos.shape[0], interval=50, blit=True, init_func=init)
+
+        return ani, fig, ax
 
     def __getitem__(self, item):
         return self.dic[item]
