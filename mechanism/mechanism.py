@@ -837,7 +837,8 @@ class Mechanism:
         text_list = []
         if stamp is not None:
             assert stamp.size == self.pos.shape[0], "Given stamp array doesn't match the input size."
-            text = ax.text(0.05, 0.9, '', transform=ax.transAxes, bbox=dict(facecolor='white', edgecolor='white'))
+            text = ax.text(0.05, 0.9, '', transform=ax.transAxes, bbox=dict(facecolor='white', edgecolor='white'),
+                           zorder=6)
             text_list.append(text)
 
         def init():
