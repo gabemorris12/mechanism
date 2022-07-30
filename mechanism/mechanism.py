@@ -81,14 +81,14 @@ class Joint:
         if vel_arrow_kwargs:
             self.vel_arrow_kwargs = vel_arrow_kwargs
         elif exclude:
-            self.vel_arrow_kwargs = dict(lw=0)
+            self.vel_arrow_kwargs = dict(lw=0, mutation_scale=0)
         else:
             self.vel_arrow_kwargs = appearance['vel_arrow']
 
         if acc_arrow_kwargs:
             self.acc_arrow_kwargs = acc_arrow_kwargs
         elif exclude:
-            self.acc_arrow_kwargs = dict(lw=0)
+            self.acc_arrow_kwargs = dict(lw=0, mutation_scale=0)
         else:
             self.acc_arrow_kwargs = appearance['acc_arrow']
 
