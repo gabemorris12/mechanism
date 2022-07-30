@@ -43,7 +43,7 @@ a2_t = np.zeros(250)
 mechanism = Mechanism(vectors=(a, b, c, d, e, x, y), origin=O, guess=(guess1, guess2, guess3), pos=t2_t,
                       vel=w2_t, acc=a2_t, loops=loops)
 mechanism.iterate()
-ani, fig, ax = mechanism.get_animation(velocity=True, acceleration=True, stamp=time, cushion=0.5)
+ani, fig, ax = mechanism.get_animation(velocity=True, acceleration=True, stamp=time, stamp_loc=(0.5, 0.9), cushion=0.5)
 
 ax.set_title('Engine')
 

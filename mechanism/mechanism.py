@@ -769,7 +769,8 @@ class Mechanism:
 
         return (x_min, x_max), (y_min, y_max)
 
-    def get_animation(self, velocity=False, acceleration=False, scale=0.1, stamp=None, grid=True, cushion=1):
+    def get_animation(self, velocity=False, acceleration=False, scale=0.1, stamp=None, stamp_loc=(0.05, 0.9),
+                      grid=True, cushion=1):
         """
         :param velocity: bool; Plots velocity vectors if True
         :param acceleration: bool; Plots acceleration vectors if True
@@ -777,7 +778,9 @@ class Mechanism:
                       maximum magnitude to the diagonal of the bounding box. A scale of 0.1 (default) would indicate
                       that the maximum magnitude of the velocity/acceleration is 1/10 the diagonal of the bounding box.
         :param stamp: np.ndarray; Shows a text stamp in the animation for displaying any kind of input. Must be the same
-                     size as the input and correspond to the input motion.
+                      size as the input and correspond to the input motion.
+        :param stamp_loc: tuple; Position of the stamp in axes transform units. A location of (0.5, 0.75) would place
+                          the stamp 50% along the x direction and 75% along the y direction.
         :param grid: bool; Add the grid if true.
         :param cushion: int, float; Add a cushion around the plot.
         :return: An animation, figure, and axes object.
@@ -837,8 +840,8 @@ class Mechanism:
         text_list = []
         if stamp is not None:
             assert stamp.size == self.pos.shape[0], "Given stamp array doesn't match the input size."
-            text = ax.text(0.05, 0.9, '', transform=ax.transAxes, bbox=dict(facecolor='white', edgecolor='white'),
-                           zorder=6)
+            text = ax.text(stamp_loc[0], stamp_loc[1], '', transform=ax.transAxes,
+                           bbox=dict(facecolor='white', edgecolor='white'), zorder=6)
             text_list.append(text)
 
         def init():
