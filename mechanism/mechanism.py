@@ -273,7 +273,26 @@ class Mechanism:
         :param origin: Joint; The joint object to be taken as the origin. This will be assumed to be fixed and forces
                        a fixed frame of reference.
         :param loops: func; This is a function of loop equations of that returns a flattened ndarray. This function is
-            used in fsolve. See examples for how these loop equations are structured.
+            used in fsolve. Essentially, a loop is defined as a set of vectors whose sum returns to the original point
+            or joint. The set of loop equations will determine how the system moves, and it is the user's responsibility
+            to provide an independent/solvable system. This means that the number of unknowns needs to match the number
+            of equations, and each loop returns two equations (one for the x direction and one for the y
+            direction). Consider an example that contains vectors 'a', 'b', 'c', etc. and has 6 unknowns. If 'x' is an
+            array that acts as a means to store the unknowns, and 'i' is the known input to the system,
+            the loop equation could look like this:
+
+            def loops(x, i):
+                temp = np.zeros((3, 2))  # Three by two matrix of zeros to act as a placeholder.
+                temp[0] = a(i) + b(i) - c(x[1]) + d(x[0])
+                temp[1] = e(x[2]) + f(x[3]) + d(x[0])
+                temp[2] = g(x[4]) - h(x[5]) + i()
+                return temp.flatten()
+
+            'a', 'b', 'c', etc. are Vector objects. The index of 'x' corresponds to a system's unknowns, which may be an
+            unknown length or angle of a vector. If a vector has an unknown length and angle, then the call signature
+            of the vector object would be 'a(r, theta)'. It takes practice to get this right, so it is best to look to
+            other examples provided.
+
         :param pos: int, float, ndarray; Value(s) of pos for the input vector. This gets past as a second argument
             in the loop equation. Could be an angle input or a length input. 
         :param vel: int, float, ndarray; Value(s) of velocity for the input vector. This gets past as a second argument
