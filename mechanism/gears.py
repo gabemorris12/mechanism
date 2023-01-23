@@ -17,7 +17,7 @@ class SpurGear:
     gear_appearance = appearance['gear_plot']
 
     def __init__(self, N=0, pd=0, d=0, pressure_angle=20, agma=False, a=0, b=0, backlash=0, internal=False,
-                 ignore_undercut=False, size=1000):
+                 ignore_undercut=False, size=300):
         """
         In order to fully define the gear,
         - at least two of the following should be defined: N, pd, and d
@@ -48,7 +48,7 @@ class SpurGear:
         :param ignore_undercut: If true, the undercut warning will be ignored. This occurs when the dedendum is large
                                 enough to extend passed the base circle.
         :param size: The size of one involute curve; make this smaller in some cases if SolidWorks says that the points
-                     are too close. Default value is 1000.
+                     are too close. Default value is 300.
 
         Instance Attributes
         -------------------

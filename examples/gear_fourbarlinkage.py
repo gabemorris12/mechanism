@@ -4,9 +4,9 @@ import numpy as np
 import matplotlib.pyplot as plt
 
 # Define gear inputs
-pd = 8
-N_gear = 45
-N_pinion = 15
+pd = 8  # Diametral pitch
+N_gear = 45  # Number of teeth on gear
+N_pinion = 15  # Number of teeth on pinion
 
 m = N_gear/N_pinion  # gear ratio (by definition, gear is always bigger than the pinion)
 
@@ -23,7 +23,7 @@ d = Vector((O, C), r=N_gear/(pd*2) + N_pinion/(pd*2), theta=0, show=False)
 
 def loops(x, inp):
     temp = a(inp) + b(x[0], x[1]) - c(x[2]) - d()  # equations 1 and 2
-    temp = np.concatenate((temp, [a.pos.theta - m*c.pos.theta]))  # equation 3
+    temp = np.concatenate((temp, [a.pos.theta + m*c.pos.theta]))  # equation 3 appended
     return temp
 
 
