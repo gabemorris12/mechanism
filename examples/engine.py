@@ -1,8 +1,11 @@
+# This test just verifies that the directions of the velocity and acceleration makes sense.
+# See to it that the figures match those from Homework 2
 from mechanism import *
 import numpy as np
 import matplotlib.pyplot as plt
 
 O, A, B, C, D = get_joints('O A B C D')
+C.follow = True
 a = Vector((O, A), r=2)
 b = Vector((A, B), r=6)
 x = Vector((O, B), theta=np.pi/3, style='dotted')
@@ -32,7 +35,7 @@ guess3 = np.array([100, 100, 100, 100, 100, 100])
 # mechanism.tables(position=True, velocity=True, acceleration=True)
 # mechanism.plot(velocity=True, acceleration=True)
 
-time = np.linspace(0, 0.12, 250)
+time = np.linspace(0, 0.04, 250)
 t2_t = -50*np.pi*time
 w2_t = -50*np.pi*np.ones(250)
 a2_t = np.zeros(250)
@@ -40,15 +43,23 @@ a2_t = np.zeros(250)
 mechanism = Mechanism(vectors=(a, b, c, d, e, x, y), origin=O, guess=(guess1, guess2, guess3), pos=t2_t,
                       vel=w2_t, acc=a2_t, loops=loops)
 mechanism.iterate()
-ani, fig, ax = mechanism.get_animation(cushion=0.5)
+ani, fig, ax = mechanism.get_animation(velocity=True, acceleration=True, stamp=time, stamp_loc=(0.5, 0.9), cushion=0.5)
 
 ax.set_title('Engine')
-
-plt.show()
 
 # ani.save('../animations/engine.mp4', dpi=300)
 
 # If interested at a certain point, access the Joint attributes.
-# plt.plot(time, C.acc_mags, color='maroon')
-# plt.grid()
-# plt.show()
+# fig2, ax2 = plt.subplots()
+# ax2.plot(time, d.acc.r_ddots, color='maroon', label=r'$a_D(t)$')
+#
+# fig3, ax3 = plt.subplots()
+# ax3.plot(time, C.acc_mags, color='maroon', label=r'$a_C(t)$')
+# ax3.plot(time, x.acc.r_ddots, color='deepskyblue', label=r'$a_B(t)$')
+#
+# for ax_ in [ax2, ax3]:
+#     ax_.grid()
+#     ax_.legend()
+#     ax_.set_xlabel('Time ($s$)')
+
+plt.show()
