@@ -789,7 +789,7 @@ class Mechanism:
         return (x_min, x_max), (y_min, y_max)
 
     def get_animation(self, velocity=False, acceleration=False, scale=0.1, stamp=None, stamp_loc=(0.05, 0.9),
-                      grid=True, cushion=1):
+                      grid=True, cushion=1, show_joint_names=False):
         """
         :param velocity: bool; Plots velocity vectors if True
         :param acceleration: bool; Plots acceleration vectors if True
@@ -802,6 +802,7 @@ class Mechanism:
                           the stamp 50% along the x direction and 75% along the y direction.
         :param grid: bool; Add the grid if true.
         :param cushion: int, float; Add a cushion around the plot.
+        :param show_joint_names: bool; Show joint' names if true.
         :return: An animation, figure, and axes object.
         """
         fig, ax = plt.subplots()
@@ -875,9 +876,13 @@ class Mechanism:
             return list(plot_dict.values()) + vel_arrow_patches + acc_arrow_patches + text_list
 
         def animate(i):
+            joints = []
             for vec, line in plot_dict.items():
                 j1, j2 = vec.joints
                 line.set_data((j1.x_positions[i], j2.x_positions[i]), (j1.y_positions[i], j2.y_positions[i]))
+                if show_joint_names:
+                    joints.append(plt.text(x=j1.x_positions[i], y=j1.y_positions[i], s=j1.name))
+                    joints.append(plt.annotate(xy=(j2.x_positions[i], j2.y_positions[i]), text=j2.name))
             if velocity:
                 for joint, arrow in zip(self.joints, vel_arrow_patches):
                     x_head, y_head = np.real(joint._vel_heads)[i], np.imag(joint._vel_heads)[i]
@@ -888,7 +893,7 @@ class Mechanism:
                     arrow.set_positions(posA=(joint.x_positions[i], joint.y_positions[i]), posB=(x_head, y_head))
             if text_list:
                 text.set_text(f'{stamp[i]:.3f}')
-            return list(plot_dict.values()) + vel_arrow_patches + acc_arrow_patches + text_list
+            return list(plot_dict.values()) + vel_arrow_patches + acc_arrow_patches + text_list + joints
 
         # noinspection PyTypeChecker
         ani = Player(fig, animate, frames=self.pos.shape[0], interval=50, blit=True, init_func=init)
