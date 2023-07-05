@@ -847,11 +847,15 @@ class Mechanism:
         ax.set_ylim(y_min - cushion, y_max + cushion)
 
         plot_dict = {}
+        joints = {}
         for v in self.vectors:
             if not v.pos.show:
                 continue
 
             plot_dict.update({v.pos: ax.plot([], [], **v.pos.kwargs)[0]})
+            if show_joint_names:
+                for j in v.joints:
+                    joints.update({j : ax.text(x = 0.0, y = 0.0, s=j.name, visible=False)})
 
         for j in self.joints:
             if j.follow:
@@ -867,22 +871,24 @@ class Mechanism:
         def init():
             for line in plot_dict.values():
                 line.set_data([], [])
+            for j in joints.values():
+                j.set(visible = True)
             for arrow in vel_arrow_patches:
                 arrow.set_positions(posA=(0, 0), posB=(0, 0))
             for arrow in acc_arrow_patches:
                 arrow.set_positions(posA=(0, 0), posB=(0, 0))
             if text_list:
                 text.set_text('')
-            return list(plot_dict.values()) + vel_arrow_patches + acc_arrow_patches + text_list
+            return list(plot_dict.values()) + vel_arrow_patches + acc_arrow_patches + text_list + list(joints.values())
 
         def animate(i):
-            joints = []
             for vec, line in plot_dict.items():
                 j1, j2 = vec.joints
                 line.set_data((j1.x_positions[i], j2.x_positions[i]), (j1.y_positions[i], j2.y_positions[i]))
                 if show_joint_names:
-                    joints.append(plt.text(x=j1.x_positions[i], y=j1.y_positions[i], s=j1.name))
-                    joints.append(plt.annotate(xy=(j2.x_positions[i], j2.y_positions[i]), text=j2.name))
+                    offset = 0.2
+                    joints[j1].set_position((j1.x_positions[i] + offset, j1.y_positions[i] + offset))
+                    joints[j2].set_position((j2.x_positions[i] + offset, j2.y_positions[i] + offset))
             if velocity:
                 for joint, arrow in zip(self.joints, vel_arrow_patches):
                     x_head, y_head = np.real(joint._vel_heads)[i], np.imag(joint._vel_heads)[i]
@@ -893,7 +899,7 @@ class Mechanism:
                     arrow.set_positions(posA=(joint.x_positions[i], joint.y_positions[i]), posB=(x_head, y_head))
             if text_list:
                 text.set_text(f'{stamp[i]:.3f}')
-            return list(plot_dict.values()) + vel_arrow_patches + acc_arrow_patches + text_list + joints
+            return list(plot_dict.values()) + vel_arrow_patches + acc_arrow_patches + text_list + list(joints.values())
 
         # noinspection PyTypeChecker
         ani = Player(fig, animate, frames=self.pos.shape[0], interval=50, blit=True, init_func=init)
