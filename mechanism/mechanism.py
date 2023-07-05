@@ -789,7 +789,7 @@ class Mechanism:
         return (x_min, x_max), (y_min, y_max)
 
     def get_animation(self, velocity=False, acceleration=False, scale=0.1, stamp=None, stamp_loc=(0.05, 0.9),
-                      grid=True, cushion=1, show_joint_names=False):
+                      grid=True, cushion=1, show_joints=False):
         """
         :param velocity: bool; Plots velocity vectors if True
         :param acceleration: bool; Plots acceleration vectors if True
@@ -802,7 +802,7 @@ class Mechanism:
                           the stamp 50% along the x direction and 75% along the y direction.
         :param grid: bool; Add the grid if true.
         :param cushion: int, float; Add a cushion around the plot.
-        :param show_joint_names: bool; Show joint' names if true.
+        :param show_joints: bool; Show joint names if true.
         :return: An animation, figure, and axes object.
         """
         fig, ax = plt.subplots()
@@ -853,9 +853,9 @@ class Mechanism:
                 continue
 
             plot_dict.update({v.pos: ax.plot([], [], **v.pos.kwargs)[0]})
-            if show_joint_names:
+            if show_joints:
                 for j in v.joints:
-                    joints.update({j : ax.text(x = 0.0, y = 0.0, s=j.name, visible=False)})
+                    joints.update({j: ax.text(x=0.0, y=0.0, s=j.name, visible=False, zorder=5)})
 
         for j in self.joints:
             if j.follow:
@@ -871,8 +871,8 @@ class Mechanism:
         def init():
             for line in plot_dict.values():
                 line.set_data([], [])
-            for j in joints.values():
-                j.set(visible = True)
+            for j_ in joints.values():
+                j_.set(visible=True)
             for arrow in vel_arrow_patches:
                 arrow.set_positions(posA=(0, 0), posB=(0, 0))
             for arrow in acc_arrow_patches:
@@ -885,7 +885,7 @@ class Mechanism:
             for vec, line in plot_dict.items():
                 j1, j2 = vec.joints
                 line.set_data((j1.x_positions[i], j2.x_positions[i]), (j1.y_positions[i], j2.y_positions[i]))
-                if show_joint_names:
+                if show_joints:
                     offset = 0.2
                     joints[j1].set_position((j1.x_positions[i] + offset, j1.y_positions[i] + offset))
                     joints[j2].set_position((j2.x_positions[i] + offset, j2.y_positions[i] + offset))
