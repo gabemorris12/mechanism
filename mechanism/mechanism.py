@@ -789,7 +789,7 @@ class Mechanism:
         return (x_min, x_max), (y_min, y_max)
 
     def get_animation(self, velocity=False, acceleration=False, scale=0.1, stamp=None, stamp_loc=(0.05, 0.9),
-                      grid=True, cushion=1, show_joints=False):
+                      grid=True, cushion=1, show_joints=False, interval=50):
         """
         :param velocity: bool; Plots velocity vectors if True
         :param acceleration: bool; Plots acceleration vectors if True
@@ -803,6 +803,7 @@ class Mechanism:
         :param grid: bool; Add the grid if true.
         :param cushion: int, float; Add a cushion around the plot.
         :param show_joints: bool; Show joint names if true.
+        :param interval: int; Delay in milliseconds between frames. Smaller values will speed up the animation.
         :return: An animation, figure, and axes object.
         """
         fig, ax = plt.subplots()
@@ -902,7 +903,7 @@ class Mechanism:
             return list(plot_dict.values()) + vel_arrow_patches + acc_arrow_patches + text_list + list(joints.values())
 
         # noinspection PyTypeChecker
-        ani = Player(fig, animate, frames=self.pos.shape[0], interval=50, blit=True, init_func=init)
+        ani = Player(fig, animate, frames=self.pos.shape[0], interval=interval, blit=True, init_func=init)
 
         return ani, fig, ax
 
