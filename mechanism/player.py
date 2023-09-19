@@ -29,17 +29,17 @@ class Player(FuncAnimation):
                 self.i = 0
 
     def _pause_play(self, event):
-        if self.going and str(event.button) == 'MouseButton.MIDDLE':
+        if self.going and (str(event.button) == 'MouseButton.MIDDLE' or event.button == 2):
             self.pause()
             self.going = False
-        elif not self.going and str(event.button) == 'MouseButton.MIDDLE':
+        elif not self.going and (str(event.button) == 'MouseButton.MIDDLE' or event.button == 2):
             self.resume()
             self.going = True
-        elif str(event.button) == 'MouseButton.RIGHT':
+        elif str(event.button) == 'MouseButton.RIGHT' or event.button == 3:
             self.pause()
             self.going = False
             self._forward_step()
-        elif str(event.button) == 'MouseButton.LEFT':
+        elif str(event.button) == 'MouseButton.LEFT' or event.button == 1:
             self.pause()
             self.going = False
             self._backward_step()
