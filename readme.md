@@ -1,4 +1,7 @@
 # Purpose
+[![PyPI version](https://badge.fury.io/py/mechanism.svg)](https://badge.fury.io/py/mechanism)
+[![Downloads](https://static.pepy.tech/badge/mechanism)](https://pepy.tech/project/mechanism)
+[![Downloads](https://static.pepy.tech/badge/mechanism/month)](https://pepy.tech/project/mechanism)
 
 This package was created to aid with the designing process of mechanisms involving linkages, cams, and gears. In regard
 to linkages, it is capable of implementing a kinematic analysis with the knowledge of the degrees of freedom for the
