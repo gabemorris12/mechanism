@@ -5,7 +5,7 @@ import matplotlib.pyplot as plt
 
 class Player(FuncAnimation):
     def __init__(self, fig, func, frames=None, init_func=None, fargs=None, save_count=None, cache_frame_data=True,
-                 **kwargs):
+                 mouse_buttons=True, **kwargs):
         self.fig = fig
         self.func = func
         self.frames = frames
@@ -14,7 +14,8 @@ class Player(FuncAnimation):
         self.i = 0
         self.going = True
 
-        plt.connect('button_press_event', self._pause_play)
+        if mouse_buttons:
+            plt.connect('button_press_event', self._pause_play)
 
         # noinspection PyTypeChecker
         FuncAnimation.__init__(self, fig, func, frames=self._frames(), init_func=init_func, fargs=fargs,

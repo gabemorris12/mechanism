@@ -7,7 +7,7 @@ from scipy.optimize import fsolve
 
 from .dataframe import Data
 from .vectors import VectorBase, APPEARANCE
-from .player import Player
+from ._player import Player
 
 
 # going = True
@@ -789,7 +789,7 @@ class Mechanism:
         return (x_min, x_max), (y_min, y_max)
 
     def get_animation(self, velocity=False, acceleration=False, scale=0.1, stamp=None, stamp_loc=(0.05, 0.9),
-                      grid=True, cushion=1, show_joints=False, interval=50):
+                      grid=True, cushion=1, show_joints=False, interval=50, mouse_buttons=True):
         """
         :param velocity: bool; Plots velocity vectors if True
         :param acceleration: bool; Plots acceleration vectors if True
@@ -804,6 +804,12 @@ class Mechanism:
         :param cushion: int, float; Add a cushion around the plot.
         :param show_joints: bool; Show joint names if true.
         :param interval: int; Delay in milliseconds between frames. Smaller values will speed up the animation.
+        :param mouse_buttons: bool; Choose to have the ability to go frame by frame or pause the animation with the
+                              mouse buttons. Use the right and left-click on a mouse to go frame by frame, and then use
+                              the scroll wheel to play and pause the animation. This is set true by default, so if you
+                              have a laptop that doesn't have a mouse, then you might want to toggle this to False if
+                              you are keep unintentionally clicking on the GUI window, and then can no longer continue
+                              the animation due to the absence of the scroll wheel.
         :return: An animation, figure, and axes object.
         """
         fig, ax = plt.subplots()
@@ -903,7 +909,8 @@ class Mechanism:
             return list(plot_dict.values()) + vel_arrow_patches + acc_arrow_patches + text_list + list(joints.values())
 
         # noinspection PyTypeChecker
-        ani = Player(fig, animate, frames=self.pos.shape[0], interval=interval, blit=True, init_func=init)
+        ani = Player(fig, animate, frames=self.pos.shape[0], interval=interval, blit=True, init_func=init,
+                     mouse_buttons=mouse_buttons)
 
         return ani, fig, ax
 

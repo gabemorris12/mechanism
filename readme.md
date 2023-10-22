@@ -120,9 +120,15 @@ d = Vector((C, B), r=9)
 
 Always define the vectors in the polar form. The first argument is the joints, and the first joint is the tail of the
 vector, and the second is the head. Additionally, extra keyword arguments will be passed to plt.plot() for styling.
-There should be half as many loop equations as there are unknown. The input vector "a" does not need to have its known
-values at its declaration. Instead, it's values will be accounted for in the loop equation. The next thing to do is to
-define the known input and guesses for the first iteration of the unknown values.
+
+By not defining the angles for a vector (like `a`, `b`, and `c`) you are saying that this vector will have a varying
+angle and the same is true for the length argument (`r`). If both the length and the angle are defined, as with `c`,
+then the vector is stationary and will remain at this length and angle. If niether `r` or `theta` is specified, then you
+are saying that the vector changes in length and angle, so you should expect two degrees of freedom for the input of
+this vector in the vector loop equations. There should be half as many loop equations as there are unknown. The input
+vector "a" does not need to have its known values at its declaration. Instead, it's values will be accounted for in the
+loop equation. The next thing to do is to define the known input and guesses for the first iteration of the unknown
+values.
 
 ```python
 # Define the known input to the system.
@@ -414,9 +420,10 @@ matches the units of the analysis.
 
 ![image not found](https://github.com/gabemorris12/mechanism/raw/master/images/gear60_compare.PNG)
 
-The results are a near identical match, and the addendum and dedendum fit perfectly. If analyzed closely, the only difference is the tooth thickness. The gray gear
-(the resulting gear from this package) has a slightly larger tooth thickness compared to SolidWorks' gear. This is due
-to the fact that SolidWorks doesn't use an involute gear tooth profile, as gears from the SolidWorks toolbox are for 
-visuals only. Instead, the tooth profile is circular. Their gears should not be used for manufacturing as this is not 
-accurate at all. The purpose of the involute tooth profile is that the meshing of gears will always produce a constant 
-angular velocity, even when the gears aren't perfectly placed tangent to the pitch circles.
+The results are a near identical match, and the addendum and dedendum fit perfectly. If analyzed closely, the only
+difference is the tooth thickness. The gray gear (the resulting gear from this package) has a slightly larger tooth
+thickness compared to SolidWorks' gear. This is due to the fact that SolidWorks doesn't use an involute gear tooth
+profile, as gears from the SolidWorks toolbox are for visuals only. Instead, the tooth profile is circular. Their gears
+should not be used for manufacturing as this is not accurate at all. The purpose of the involute tooth profile is that
+the meshing of gears will always produce a constant angular velocity, even when the gears aren't perfectly placed
+tangent to the pitch circles.
