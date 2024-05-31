@@ -1,7 +1,7 @@
 from setuptools import setup, find_packages
 import os
 
-THIS_DIR = r'C:\Users\gmbra\Downloads\Python Programs\mechanism'
+THIS_DIR = os.path.dirname(os.path.abspath(__file__))
 
 VERSION = '1.1.7'
 

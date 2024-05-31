@@ -3,5 +3,6 @@ __pycache__
 dist
 *.egg-info
 project
+venv
 
 scratch*
