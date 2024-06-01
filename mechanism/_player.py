@@ -5,7 +5,7 @@ import matplotlib.pyplot as plt
 
 class Player(FuncAnimation):
     def __init__(self, fig, func, frames=None, init_func=None, fargs=None, save_count=None, cache_frame_data=True,
-                 mouse_buttons=True, **kwargs):
+                 key_bindings=True, **kwargs):
         self.fig = fig
         self.func = func
         self.frames = frames
@@ -14,8 +14,9 @@ class Player(FuncAnimation):
         self.i = 0
         self.going = True
 
-        if mouse_buttons:
-            plt.connect('button_press_event', self._pause_play)
+        if key_bindings:
+            # noinspection PyTypeChecker
+            plt.connect('key_press_event', self._pause_play)
 
         # noinspection PyTypeChecker
         FuncAnimation.__init__(self, fig, func, frames=self._frames(), init_func=init_func, fargs=fargs,
@@ -30,17 +31,17 @@ class Player(FuncAnimation):
                 self.i = 0
 
     def _pause_play(self, event):
-        if self.going and (str(event.button) == 'MouseButton.MIDDLE' or event.button == 2):
+        if self.going and event.key == " ":
             self.pause()
             self.going = False
-        elif not self.going and (str(event.button) == 'MouseButton.MIDDLE' or event.button == 2):
+        elif not self.going and event.key == " ":
             self.resume()
             self.going = True
-        elif str(event.button) == 'MouseButton.RIGHT' or event.button == 3:
+        elif event.key == 'right':
             self.pause()
             self.going = False
             self._forward_step()
-        elif str(event.button) == 'MouseButton.LEFT' or event.button == 1:
+        elif event.key == 'left':
             self.pause()
             self.going = False
             self._backward_step()
