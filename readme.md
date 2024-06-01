@@ -21,6 +21,24 @@ An argument for AGMA standards may be set to `True` if desired.
 
 Install this package via pip: `pip install mechanism`.
 
+# Tutorials
+To effectively use these tools, it is necessary to have some understanding on free body diagrams and vector loops that
+define a mechanism. These tutorial videos are provided to help accommodate this issue.
+
+For the most simple four bar linkage (the one introduced in this readme), watch this video:
+
+*insert iframe*
+
+Additionally, here is a breakdown of this real world example:
+
+![image not found](https://github.com/gabemorris12/mechanism/raw/master/images/marblevator-real.gif)
+
+<p style="text-align: center;">&#x2193;</p>
+
+![image not found](https://github.com/gabemorris12/mechanism/raw/master/images/marblevator.gif)
+
+*insert iframe*
+
 # Results/Examples
 
 `fourbarlinkage.py`
@@ -126,7 +144,7 @@ vector, and the second is the head. Additionally, extra keyword arguments will b
 
 By not defining the angles for a vector (like `a`, `b`, and `c`) you are saying that this vector will have a varying
 angle and the same is true for the length argument (`r`). If both the length and the angle are defined, as with `c`,
-then the vector is stationary and will remain at this length and angle. If niether `r` or `theta` is specified, then you
+then the vector is stationary and will remain at this length and angle. If neither `r` or `theta` is specified, then you
 are saying that the vector changes in length and angle, so you should expect two degrees of freedom for the input of
 this vector in the vector loop equations. There should be half as many loop equations as there are unknown. The input
 vector "a" does not need to have its known values at its declaration. Instead, it's values will be accounted for in the
