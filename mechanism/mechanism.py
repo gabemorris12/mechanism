@@ -914,6 +914,17 @@ class Mechanism:
 
         return ani, fig, ax
 
+    @staticmethod
+    def exclude(joints: list[Joint]):
+        """
+        Exclude the joint velocities and accelerations from the animations.
+
+        :param joints: list[Joint]; A list of joint objects to exclude from the animations.
+        """
+        for joint in joints:
+            joint.vel_arrow_kwargs = dict(lw=0, mutation_scale=0)
+            joint.acc_arrow_kwargs = dict(lw=0, mutation_scale=0)
+
     def __getitem__(self, item):
         return self.dic[item]
 
