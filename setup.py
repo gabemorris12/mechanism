@@ -3,7 +3,7 @@ import os
 
 THIS_DIR = os.path.dirname(os.path.abspath(__file__))
 
-VERSION = '1.1.7'
+VERSION = '1.1.8'
 
 CLASSIFIERS = [
     'Development Status :: 5 - Production/Stable',
