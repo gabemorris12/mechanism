@@ -680,6 +680,9 @@ class Mechanism:
         Fixes the position of all the joints and vectors. Also fixes the velocity and acceleration data for all the
         vectors and joints if vel and acc for the mechanism is given.
         """
+        for v in self.vectors:
+            v.get = v.pos.get
+
         fsolve(self.loops, self.guess[0], args=(self.pos,))
         self._fix_position()
 
