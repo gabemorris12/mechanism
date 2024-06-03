@@ -1,4 +1,5 @@
 # Purpose
+
 [![PyPI version](https://badge.fury.io/py/mechanism.svg)](https://badge.fury.io/py/mechanism)
 [![Downloads](https://static.pepy.tech/badge/mechanism)](https://pepy.tech/project/mechanism)
 [![Downloads](https://static.pepy.tech/badge/mechanism/month)](https://pepy.tech/project/mechanism)
@@ -22,12 +23,13 @@ An argument for AGMA standards may be set to `True` if desired.
 Install this package via pip: `pip install mechanism`.
 
 # Tutorials
+
 To effectively use these tools, it is necessary to have some understanding on free body diagrams and vector loops that
 define a mechanism. These tutorial videos are provided to help accommodate this issue.
 
 For the most simple four bar linkage (the one introduced in this readme), watch this video:
 
-*insert iframe*
+<iframe width="1276" height="718" src="https://www.youtube.com/embed/kMmYv8u8824?list=PLghzFAspn1-eGjPOTT0D_6LXWqMBFRVIW" title="Introduction to Mechanisms with Python" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" referrerpolicy="strict-origin-when-cross-origin" allowfullscreen></iframe>
 
 Additionally, here is a breakdown of this real world example:
 
