@@ -29,7 +29,7 @@ define a mechanism. These tutorial videos are provided to help accommodate this 
 
 For the most simple four bar linkage (the one introduced in this readme), watch this video:
 
-<iframe width="1276" height="718" src="https://www.youtube.com/embed/kMmYv8u8824?list=PLghzFAspn1-eGjPOTT0D_6LXWqMBFRVIW" title="Introduction to Mechanisms with Python" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" referrerpolicy="strict-origin-when-cross-origin" allowfullscreen></iframe>
+[![Introduction to Mechanisms with Python](https://img.youtube.com/vi/kMmYv8u8824/0.jpg)](https://www.youtube.com/watch?v=kMmYv8u8824&list=PLghzFAspn1-eGjPOTT0D_6LXWqMBFRVIW)
 
 Additionally, here is a breakdown of this real world example:
 
