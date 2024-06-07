@@ -39,7 +39,7 @@ Additionally, here is a breakdown of this real world example:
 
 ![image not found](https://github.com/gabemorris12/mechanism/raw/master/images/marblevator.gif)
 
-*insert iframe*
+[![Advanced Mechanisms with Python](https://img.youtube.com/vi/usY-oBifcM4/0.jpg)](https://www.youtube.com/watch?v=usY-oBifcM4&list=PLghzFAspn1-eGjPOTT0D_6LXWqMBFRVIW)
 
 # Results/Examples
 
