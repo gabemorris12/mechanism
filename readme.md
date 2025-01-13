@@ -4,23 +4,27 @@
 [![Downloads](https://static.pepy.tech/badge/mechanism)](https://pepy.tech/project/mechanism)
 [![Downloads](https://static.pepy.tech/badge/mechanism/month)](https://pepy.tech/project/mechanism)
 
-This package was created to aid with the designing process of mechanisms involving linkages, cams, and gears. In regard
-to linkages, it is capable of implementing a kinematic analysis with the knowledge of the degrees of freedom for the
-vectors that make up the mechanism. With the aid of numerical solving and iteration, the position, velocity, and
-acceleration of these vectors and points may be acquired.
+This package was developed to assist in designing mechanisms involving linkages, cams, and gears. For linkages, it can
+perform kinematic analysis by utilizing the degrees of freedom for the vectors that define the mechanism. Through
+numerical solving and iteration, the position, velocity, and acceleration of these vectors and points can be determined.
 
-In regard to cams, this package is capable of supplying coordinates of a cam profile, plotting SVAJ diagrams, and
-getting a cam and follower animation for roller and flat faced followers. In turn, the coordinates may be supplied to a
-machinist or imported into SolidWorks. All that is needed to know is the motion description (i.e. rise 2 inches in 1
-second, dwell for 1.5 seconds, fall 2 inches in 3 seconds). As of right now, the kinds of motion supported are
-naive/uniform motion (how the cam shouldn't be designed), harmonic motion, and cycloidal motion. It is possible that
-this gets updated in the future with better options such as modified sinusoidal motion.
+For cams, the package provides the ability to generate cam profile coordinates, plot SVAJ (displacement, velocity,
+acceleration, and jerk) diagrams, and create animations for cams with roller or flat-faced followers. These coordinates
+can be used for machining or imported into SolidWorks. Users only need to specify the motion description (e.g., "rise 2
+inches in 1 second, dwell for 1.5 seconds, fall 2 inches in 3 seconds"). Currently, the supported motion types include
+uniform motion (not recommended for cam design), harmonic motion, and cycloidal motion. Future updates may introduce
+improved options like modified sinusoidal motion.
 
-For gears, this package is capable of providing the coordinates of a spur gear tooth profile given a set of properties.
-The analysis is based on the diametral pitch, number of teeth, and pitch diameter if desired over the number of teeth.
-An argument for AGMA standards may be set to `True` if desired.
+For gears, the package can generate the coordinates of a spur gear tooth profile based on given properties such as
+diametral pitch, number of teeth, or pitch diameter. If desired, an argument can be set to apply AGMA standards.
 
-Install this package via pip: `pip install mechanism`.
+Install this package via pip: `pip install mechanism`. If you are interested in development, then do
+
+```bash
+git clone https://github.com/gabemorris12/mechanism.git
+cd mechanism
+pip install -e .
+```
 
 # Tutorials
 
@@ -29,7 +33,7 @@ define a mechanism. These tutorial videos are provided to help accommodate this 
 
 For the most simple four bar linkage (the one introduced in this readme), watch this video:
 
-[![Introduction to Mechanisms with Python](https://img.youtube.com/vi/kMmYv8u8824/0.jpg)](https://www.youtube.com/watch?v=kMmYv8u8824&list=PLghzFAspn1-eGjPOTT0D_6LXWqMBFRVIW)
+[Introduction to Mechanisms with Python](https://www.youtube.com/watch?v=kMmYv8u8824&list=PLghzFAspn1-eGjPOTT0D_6LXWqMBFRVIW)
 
 Additionally, here is a breakdown of this real world example:
 
@@ -39,7 +43,9 @@ Additionally, here is a breakdown of this real world example:
 
 ![image not found](https://github.com/gabemorris12/mechanism/raw/master/images/marblevator.gif)
 
-[![Advanced Mechanisms with Python](https://img.youtube.com/vi/usY-oBifcM4/0.jpg)](https://www.youtube.com/watch?v=usY-oBifcM4&list=PLghzFAspn1-eGjPOTT0D_6LXWqMBFRVIW)
+You can find the video tutorial here:
+
+[Advanced Mechanisms with Python](https://www.youtube.com/watch?v=usY-oBifcM4&list=PLghzFAspn1-eGjPOTT0D_6LXWqMBFRVIW)
 
 # Results/Examples
 
@@ -433,8 +439,8 @@ output:
 | Circular Backlash        | 0.00125  |
 
 Keep in mind that the `size` argument refers to the size of the coordinates that make up the involute curve. The more
-points, the sharper it is, but SolidWorks sometimes struggles with points being too close together. To fix this issue,
-make the size smaller. The default value is 1000.
+points, the sharper it is, but SolidWorks sometimes struggles with points being too close together. If SolidWorks fails
+to generate the curve, then decrease the size. The default value is 300.
 
 ### SolidWorks Results
 
