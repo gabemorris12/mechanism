@@ -1,6 +1,5 @@
 import json
-import matplotlib
-matplotlib.use('module://ipympl.backend_nbagg')
+
 import matplotlib.pyplot as plt
 from matplotlib.patches import FancyArrowPatch
 import numpy as np

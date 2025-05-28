@@ -81,6 +81,115 @@ You can find the video tutorial here:
 
 ![image not found](https://github.com/gabemorris12/mechanism/raw/master/images/cam2.gif)
 
+# Running Animations in Jupyter Notebooks
+
+The mechanism package now supports interactive animations in Jupyter notebooks, which enables the same interactive widget and real-time simulations as regualr .py files:
+
+
+## Setup for Jupyter Notebook Animations
+
+To run mechanism animations in Jupyter notebooks, you'll need to set up your environment with the required packages:
+
+1. Create and activate a virtual environment, this is highly recommended:
+   ```bash
+   python -m venv .venv
+   source .venv/bin/activate  # On Windows, use: .venv\Scripts\activate
+   ```
+    What you should see after this point is a '''(.venv)''' at the beginning of your new terminal line
+
+2. Install mechanism with notebook support:
+   ```bash
+   pip install -e ".[notebook]"  
+   ```
+    This includes ipympl for interactive plots
+
+3. Install Jupyter:
+   ```bash
+   pip install jupyter notebook
+   ```
+   This will install Jupyter frontend and Notebook within your virtual environment
+
+4. Start Jupyter:
+   ```bash
+   jupyter notebook
+   ```
+
+## Using Interactive Animations
+
+In your Jupyter notebook, start with these imports and settings:
+
+```python
+%matplotlib ipympl  # Essential for interactive plots
+import matplotlib.pyplot as plt
+import numpy as np
+from mechanism import Mechanism, Joint, Vector
+```
+
+The `%matplotlib ipympl` magic command enables the interactive backend that allows for:
+- Real-time animation updates
+- Interactive zooming and panning
+- Dynamic plot resizing
+- Widget integration
+
+It is essential that the `%matplotlib ipympl` magic command is before the '''import matplotlib.pyplot as plt'''
+
+After completing the following, the animations should appear as interative inline elements!
+
+## Example: Interactive Four-Bar Linkage
+
+Here's a minimal example of an interactive animation in a Jupyter notebook:
+
+```python
+%matplotlib ipympl
+import matplotlib.pyplot as plt
+import numpy as np
+from mechanism import Mechanism, Joint, Vector
+
+# Define joints and vectors
+O, A, B, C = get_joints('O A B C')
+a = Vector((O, A), r=5)
+b = Vector((A, B), r=8)
+c = Vector((O, C), r=8, theta=0, style='ground')
+d = Vector((C, B), r=9)
+
+# Define motion
+time = np.linspace(0, 0.12, 300)
+angular_velocity = 50*np.pi/3  # 500 RPM
+theta = angular_velocity*time
+omega = np.full_like(time, angular_velocity)
+alpha = np.zeros_like(time)
+
+# Create and run mechanism
+mechanism = Mechanism(
+    vectors=(a, b, c, d),
+    origin=O,
+    loops=lambda x, i: a(i) + b(x[0]) - c() - d(x[1]),
+    pos=theta,
+    vel=omega,
+    acc=alpha,
+    guess=(np.deg2rad([45, 90]), [1000, 1000], [1000, 1000])
+)
+
+mechanism.iterate()
+ani, fig, ax = mechanism.get_animation(show_joints=True)  # Enable joint labels
+```
+
+## Troubleshooting
+
+If you encounter issues:
+
+1. **"Command not found: notebook"**: Make sure Jupyter is installed in your virtual environment
+2. **"%matplotlib ipympl not working"**: Verify ipympl is installed with `pip list | grep ipympl`
+3. **Kernel issues**: In Jupyter, go to Kernel → Change kernel and select the kernel from your virtual environment
+4. **Notebook not trusted**: Click the "Trust" button in the notebook interface
+
+## Benefits of Jupyter Notebook Animations
+
+- **Interactive Exploration**: Zoom, pan, and interact with the mechanism in real-time
+- **Educational Value**: Combine animations with explanatory text and equations
+- **Data Analysis**: Easily combine animations with data visualization
+- **Documentation**: Create self-contained examples that others can run and modify
+
 # Linkages, Cranks, Couplers, and Rockers
 
 In order to use the contents of `mechanism.py`, a basic knowledge of vector loops must be known. The structure of the
@@ -93,7 +202,7 @@ package's usage, this walk through is provided.
 
 A four bar linkage is the basic building block of all mechanisms. This is similar to how the triangle is the basic
 building block of all structures. What defines a mechanism or structure is the system's overall number of degrees of
-freedom, and the number of degrees of freedom is determined via Kutzbach’s equation.
+freedom, and the number of degrees of freedom is determined via Kutzbach's equation.
 
 ![image not found](https://github.com/gabemorris12/mechanism/raw/master/images/fourbarlinkage_dof.PNG)
 
