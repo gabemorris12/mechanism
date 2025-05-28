@@ -95,7 +95,7 @@ To run mechanism animations in Jupyter notebooks, you'll need to set up your env
    python -m venv .venv
    source .venv/bin/activate  # On Windows, use: .venv\Scripts\activate
    ```
-    What you should see after this point is a '''(.venv)''' at the beginning of your new terminal line
+    What you should see after this point is a `(.venv)` at the beginning of your new terminal line
 
 2. Install mechanism with notebook support:
    ```bash
@@ -131,7 +131,7 @@ The `%matplotlib ipympl` magic command enables the interactive backend that allo
 - Dynamic plot resizing
 - Widget integration
 
-It is essential that the `%matplotlib ipympl` magic command is before the '''import matplotlib.pyplot as plt'''
+It is essential that the `%matplotlib ipympl` magic command is before the `import matplotlib.pyplot as plt`
 
 After completing the following, the animations should appear as interative inline elements!
 
