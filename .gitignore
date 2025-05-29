@@ -6,3 +6,4 @@ project
 venv
 
 scratch*
+.ipynb_checkpoints/
