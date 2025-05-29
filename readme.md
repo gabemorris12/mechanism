@@ -18,13 +18,26 @@ improved options like modified sinusoidal motion.
 For gears, the package can generate the coordinates of a spur gear tooth profile based on given properties such as
 diametral pitch, number of teeth, or pitch diameter. If desired, an argument can be set to apply AGMA standards.
 
-Install this package via pip: `pip install mechanism`. If you are interested in development, then do
+For python scripts, install this package via pip as: `pip install mechanism`
+
+Or, for Jupyter notebook scripts, install this package via pip as: `pip install mechanism[notebook]`
+
+If you are interested in development in a python script, then do
 
 ```bash
 git clone https://github.com/gabemorris12/mechanism.git
 cd mechanism
 pip install -e .
 ```
+
+Similarly, for development in Jupyter notebook, you may do
+
+```bash
+git clone https://github.com/gabemorris12/mechanism.git
+cd mechanism
+pip install -e ".[notebook]"
+```
+
 
 # Tutorials
 
@@ -83,7 +96,7 @@ You can find the video tutorial here:
 
 # Running Animations in Jupyter Notebooks
 
-The mechanism package now supports interactive animations in Jupyter notebooks, which enables the same interactive widget and real-time simulations as regualr .py files:
+The mechanism package now supports interactive animations in Jupyter notebooks, which enables the same interactive widget and real-time simulations as regular .py files:
 
 
 ## Setup for Jupyter Notebook Animations
@@ -95,26 +108,15 @@ To run mechanism animations in Jupyter notebooks, you'll need to set up your env
    python -m venv .venv
    source .venv/bin/activate  # On Windows, use: .venv\Scripts\activate
    ```
-    What you should see after this point is a `(.venv)` at the beginning of your new terminal line
+    What you should see after this point is a `(.venv)` at the beginning of your new command line. This will ensure Jupyter notebook and other dependencies are not installed globally on your device.
 
 2. Install mechanism with notebook support:
    ```bash
    pip install -e ".[notebook]"  
    ```
-    This includes ipympl for interactive plots
 
-3. Install Jupyter:
-   ```bash
-   pip install jupyter notebook
-   ```
-   This will install Jupyter frontend and Notebook within your virtual environment
 
-4. Start Jupyter:
-   ```bash
-   jupyter notebook
-   ```
-
-## Using Interactive Animations
+## Enabling Interactive Animations
 
 In your Jupyter notebook, start with these imports and settings:
 
@@ -131,64 +133,10 @@ The `%matplotlib ipympl` magic command enables the interactive backend that allo
 - Dynamic plot resizing
 - Widget integration
 
-It is essential that the `%matplotlib ipympl` magic command is before the `import matplotlib.pyplot as plt`
+Note, it is essential that the `%matplotlib ipympl` magic command is before the `import matplotlib.pyplot as plt` as illustrated above.
 
-After completing the following, the animations should appear as interative inline elements!
+After completing the following, the animations should appear as interactive inline elements! The examples folder contains a Jupyter notebook file of a four-bar linkage with the correct import settings for easy reference. 
 
-## Example: Interactive Four-Bar Linkage
-
-Here's a minimal example of an interactive animation in a Jupyter notebook:
-
-```python
-%matplotlib ipympl
-import matplotlib.pyplot as plt
-import numpy as np
-from mechanism import Mechanism, Joint, Vector
-
-# Define joints and vectors
-O, A, B, C = get_joints('O A B C')
-a = Vector((O, A), r=5)
-b = Vector((A, B), r=8)
-c = Vector((O, C), r=8, theta=0, style='ground')
-d = Vector((C, B), r=9)
-
-# Define motion
-time = np.linspace(0, 0.12, 300)
-angular_velocity = 50*np.pi/3  # 500 RPM
-theta = angular_velocity*time
-omega = np.full_like(time, angular_velocity)
-alpha = np.zeros_like(time)
-
-# Create and run mechanism
-mechanism = Mechanism(
-    vectors=(a, b, c, d),
-    origin=O,
-    loops=lambda x, i: a(i) + b(x[0]) - c() - d(x[1]),
-    pos=theta,
-    vel=omega,
-    acc=alpha,
-    guess=(np.deg2rad([45, 90]), [1000, 1000], [1000, 1000])
-)
-
-mechanism.iterate()
-ani, fig, ax = mechanism.get_animation(show_joints=True)  # Enable joint labels
-```
-
-## Troubleshooting
-
-If you encounter issues:
-
-1. **"Command not found: notebook"**: Make sure Jupyter is installed in your virtual environment
-2. **"%matplotlib ipympl not working"**: Verify ipympl is installed with `pip list | grep ipympl`
-3. **Kernel issues**: In Jupyter, go to Kernel → Change kernel and select the kernel from your virtual environment
-4. **Notebook not trusted**: Click the "Trust" button in the notebook interface
-
-## Benefits of Jupyter Notebook Animations
-
-- **Interactive Exploration**: Zoom, pan, and interact with the mechanism in real-time
-- **Educational Value**: Combine animations with explanatory text and equations
-- **Data Analysis**: Easily combine animations with data visualization
-- **Documentation**: Create self-contained examples that others can run and modify
 
 # Linkages, Cranks, Couplers, and Rockers
 

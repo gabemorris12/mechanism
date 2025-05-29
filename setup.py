@@ -29,7 +29,7 @@ setup(
     classifiers=CLASSIFIERS,
     packages=find_packages(),
     install_requires=['matplotlib', 'scipy'],
-    extras_require={"notebook": ["ipympl"]},
+    extras_require={"notebook": ["ipympl", "notebook"]},
     keywords=['mechanism', 'kinematic', 'cams', 'linkages', 'analysis', 'animations'],
     include_package_data=True
 )
