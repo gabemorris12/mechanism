@@ -20,7 +20,7 @@ diametral pitch, number of teeth, or pitch diameter. If desired, an argument can
 
 For python scripts, install this package via pip as: `pip install mechanism`
 
-Or, for Jupyter notebook scripts, install this package via pip as: `pip install mechanism[notebook]`
+Or, for Jupyter notebook scripts, install this package via pip as: `pip install "mechanism[notebook]"`
 
 If you are interested in development in a python script, then do
 
