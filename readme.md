@@ -18,13 +18,26 @@ improved options like modified sinusoidal motion.
 For gears, the package can generate the coordinates of a spur gear tooth profile based on given properties such as
 diametral pitch, number of teeth, or pitch diameter. If desired, an argument can be set to apply AGMA standards.
 
-Install this package via pip: `pip install mechanism`. If you are interested in development, then do
+For python scripts, install this package via pip as: `pip install mechanism`
+
+Or, for Jupyter notebook scripts, install this package via pip as: `pip install mechanism[notebook]`
+
+If you are interested in development in a python script, then do
 
 ```bash
 git clone https://github.com/gabemorris12/mechanism.git
 cd mechanism
 pip install -e .
 ```
+
+Similarly, for development in Jupyter notebook, you may do
+
+```bash
+git clone https://github.com/gabemorris12/mechanism.git
+cd mechanism
+pip install -e ".[notebook]"
+```
+
 
 # Tutorials
 
@@ -81,6 +94,50 @@ You can find the video tutorial here:
 
 ![image not found](https://github.com/gabemorris12/mechanism/raw/master/images/cam2.gif)
 
+# Running Animations in Jupyter Notebooks
+
+The mechanism package now supports interactive animations in Jupyter notebooks, which enables the same interactive widget and real-time simulations as regular .py files:
+
+
+## Setup for Jupyter Notebook Animations
+
+To run mechanism animations in Jupyter notebooks, you'll need to set up your environment with the required packages:
+
+1. Create and activate a virtual environment, this is highly recommended:
+   ```bash
+   python -m venv .venv
+   source .venv/bin/activate  # On Windows, use: .venv\Scripts\activate
+   ```
+    What you should see after this point is a `(.venv)` at the beginning of your new command line. This will ensure Jupyter notebook and other dependencies are not installed globally on your device.
+
+2. Install mechanism with notebook support:
+   ```bash
+   pip install -e ".[notebook]"  
+   ```
+
+
+## Enabling Interactive Animations
+
+In your Jupyter notebook, start with these imports and settings:
+
+```python
+%matplotlib ipympl  # Essential for interactive plots
+import matplotlib.pyplot as plt
+import numpy as np
+from mechanism import Mechanism, Joint, Vector
+```
+
+The `%matplotlib ipympl` magic command enables the interactive backend that allows for:
+- Real-time animation updates
+- Interactive zooming and panning
+- Dynamic plot resizing
+- Widget integration
+
+Note, it is essential that the `%matplotlib ipympl` magic command is before the `import matplotlib.pyplot as plt` as illustrated above.
+
+After completing the following, the animations should appear as interactive inline elements! The examples folder contains a Jupyter notebook file of a four-bar linkage with the correct import settings for easy reference. 
+
+
 # Linkages, Cranks, Couplers, and Rockers
 
 In order to use the contents of `mechanism.py`, a basic knowledge of vector loops must be known. The structure of the
@@ -93,7 +150,7 @@ package's usage, this walk through is provided.
 
 A four bar linkage is the basic building block of all mechanisms. This is similar to how the triangle is the basic
 building block of all structures. What defines a mechanism or structure is the system's overall number of degrees of
-freedom, and the number of degrees of freedom is determined via Kutzbach’s equation.
+freedom, and the number of degrees of freedom is determined via Kutzbach's equation.
 
 ![image not found](https://github.com/gabemorris12/mechanism/raw/master/images/fourbarlinkage_dof.PNG)
 
